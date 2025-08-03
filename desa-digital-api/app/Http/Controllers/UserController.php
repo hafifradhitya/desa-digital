@@ -124,6 +124,22 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try{
+            $user = $this->userRepository->getById(
+                $id
+            );
+
+            if(!$user){
+                return ResponseHelper::jsonResponse(false, 'User tidak ditemukan', null, 404);
+            }
+
+            $user = $this->userRepository->delete(
+                $id
+            );
+
+            return ResponseHelper::jsonResponse(true, 'Data User berhasil dihapus', new UserResource($user), 200);
+        } catch(\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 }
