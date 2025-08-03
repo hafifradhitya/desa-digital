@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Resources\PaginateResource;
+use App\Http\Resources\UserResource;
 use App\Interfaces\UserRepositoryInterface;
 use Illuminate\Http\Request;
 
@@ -28,7 +30,26 @@ class UserController extends Controller
                 true,
             );
 
+            return ResponseHelper::jsonResponse(true, 'Data User Berhasil Diambil', UserResource::collection($users), 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
 
+    public function getAllPaginated(Request $request)
+    {
+        $request = $request->validate([
+            'search' => 'nullable|string',
+            'row_per_page' => 'required|integer'
+        ]);
+
+        try {
+            $users = $this->userRepository->getAllPaginated(
+                $request['search'] ?? null,
+                $request['row_per_page']
+            );
+
+            return ResponseHelper::jsonResponse(true, 'Data User Berhasil Diambil', PaginateResource::make($users, UserResource::class), 200);
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }
