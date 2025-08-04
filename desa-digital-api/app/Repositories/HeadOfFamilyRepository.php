@@ -91,4 +91,45 @@ class HeadOfFamilyRepository implements HeadOfFamilyRepositoryInterface
             throw new Exception($e->getMessage());
         }
     }
+
+    public function update(
+        string $id,
+        array $data
+    ){
+        DB::beginTransaction();
+
+        try {
+            $headOfFamily = HeadOfFamily::find($id);
+
+            if(isset($data['profile_picture'])) {
+                $headOfFamily->profile_picture = $data['profile_picture']->store('assets/head-of-families', 'public');
+            }
+
+            $headOfFamily->identity_number = $data['identity_number'];
+            $headOfFamily->gender = $data['gender'];
+            $headOfFamily->date_of_birth = $data['date_of_birth'];
+            $headOfFamily->phone_number = $data['phone_number'];
+            $headOfFamily->occupation = $data['occupation'];
+            $headOfFamily->marital_status = $data['marital_status'];
+            $headOfFamily->save();
+
+            $userRepository = new UserRepository;
+
+            $userRepository->update($headOfFamily->user_id, [
+                'name' => $data['name'],
+                'email' => $data['email'],
+                // versi saya
+                // 'email' => isset($data['email']) ? $data['email'] : $headOfFamily->user->email,
+                'password' => isset($data['password']) ? bcrypt($data['password']) : $headOfFamily->user->password
+            ]);
+
+            DB::commit();
+
+            return $headOfFamily;
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            throw new Exception($e->getMessage());
+        }
+    }
 }

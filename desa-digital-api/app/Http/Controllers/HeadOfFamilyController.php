@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\HeadOfFamilyStoreRequest;
+use App\Http\Requests\HeadOfFamilyUpdateRequest;
 use App\Http\Resources\HeadOfFamilyResource;
 use App\Http\Resources\PaginateResource;
 use App\Interfaces\HeadOfFamilyRepositoryInterface;
@@ -95,9 +96,28 @@ class HeadOfFamilyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(HeadOfFamilyUpdateRequest $request, string $id)
     {
-        //
+        $request = $request->validated();
+
+        try{
+            $headOfFamily = $this->headOfFamilyRepository->getById(
+                $id
+            );
+
+            if(!$headOfFamily){
+                return ResponseHelper::jsonResponse(false, 'Kepala Keluarga Tidak Ditemukan', null, 404);
+            }
+
+            $headOfFamily = $this->headOfFamilyRepository->update(
+                $id,
+                $request
+            );
+
+            return ResponseHelper::jsonResponse(true, 'Kepala Keluarga berhasil Diupdate', new HeadOfFamilyResource($headOfFamily), 200);
+        } catch(\Exception $e){
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 
     /**
