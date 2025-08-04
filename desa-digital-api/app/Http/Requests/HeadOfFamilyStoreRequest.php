@@ -42,24 +42,4 @@ class HeadOfFamilyStoreRequest extends FormRequest
             'marital_status' => 'Status Perkawinan',
         ];
     }
-
-    public function messages()
-    {
-        return [
-            'required' => ':attribute harus diisi',
-            'string' => ':attribute harus berupa string',
-            'max' => ':attribute maksimal :max karakter',
-            'unique' => ':attribute harus berupa gambar',
-            'image' => ':attribute harus berupa email',
-            'email' => ':attribute harus berupa email',
-            'min' => ':attribute minimal :min karakter',
-            'exists' => ':attribute tidak ditemukan',
-            'integer' => ':attribute harus berupa angka',
-            'array' => ':attribute harus berupa array',
-            'mimes' => ':attribute harus berupa gambar',
-            'max:2048' => ':attribute maksimal 2048 KB',
-            'unique:users' => ':attribute sudah ada',
-            'in' => ':attribute harus berupa salah satu dari :values'
-        ];
-    }
 }
