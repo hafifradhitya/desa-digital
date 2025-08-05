@@ -47,6 +47,14 @@ class FamilyMemberRepository implements FamilyMemberRepositoryInterface
         return $query->paginate($rowPerPage);
     }
 
+    public function getById(
+        string $id
+    ){
+        $query = FamilyMember::where('id', $id)->with('headOfFamily');
+
+        return $query->first();
+    }
+
     public function create(
         array $data
     ){
