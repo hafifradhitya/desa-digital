@@ -1,5 +1,8 @@
 <?php
 
+namespace App\Repositories;
+
+use App\Interfaces\FamilyMemberRepositoryInterface;
 use App\Models\FamilyMember;
 
 class FamilyMemberRepository implements FamilyMemberRepositoryInterface

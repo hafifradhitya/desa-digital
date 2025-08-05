@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\FamilyMemberResource;
 use App\Http\Resources\PaginateResource;
+use App\Interfaces\FamilyMemberRepositoryInterface;
 use App\Models\FamilyMember;
-use FamilyMemberRepositoryInterface;
 use Illuminate\Http\Request;
 
 class FamilyMemberController extends Controller
