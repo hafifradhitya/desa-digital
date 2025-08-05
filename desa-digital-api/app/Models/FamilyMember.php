@@ -34,9 +34,9 @@ class FamilyMember extends Model
         });
     }
 
-    public function headofFamily()
+    public function headOfFamily()
     {
-        return $this->belongsTo(headofFamily::class);
+        return $this->belongsTo(HeadofFamily::class);
     }
 
     public function user()
