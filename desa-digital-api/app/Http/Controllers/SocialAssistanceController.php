@@ -30,7 +30,7 @@ class SocialAssistanceController extends Controller
 
             return ResponseHelper::jsonResponse(true, 'Data Bantuan Sosial Berhasil Berhasil Diambil', SocialAssistanceResource::collection($socialAssistances), 200);
         } catch (\Exception $e) {
-            return ResponseHelper::jsonResponse(true, 'Data Bantuan Sosial Gagal Diambil', null, 500);
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }
     }
 
