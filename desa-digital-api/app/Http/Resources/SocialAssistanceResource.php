@@ -21,7 +21,7 @@ class SocialAssistanceResource extends JsonResource
             'category' => $this->amount,
             'provider' => $this->provider,
             'description' => $this->description,
-            'is_active' => $this->is_availabe
+            'is_available' => $this->is_availabe,
         ];
     }
 }
