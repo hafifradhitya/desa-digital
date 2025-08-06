@@ -23,7 +23,7 @@ class SocialAssistanceFactory extends Factory
             'amount' => $this->faker->randomFloat(2, 100000, 1000000),
             'provider' => $this->faker->company,
             'description' => $this->faker->sentence,
-            'is_available' => $this->faker->randomElement(['true', 'false']),
+            'is_available' => $this->faker->boolean(),
         ];
     }
 }
