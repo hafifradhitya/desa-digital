@@ -28,6 +28,8 @@ class SocialAssistance extends Model
     {
         return $query->where('name', 'like', '%'. $search . '%')
         ->orWhere('provider', 'like', '%'. $search . '%')
+        ->orWhere('name', 'like', '%'. $search . '%')
+        ->orWhere('category', 'like', '%'. $search . '%')
         ->orWhere('amount', 'like', '%'. $search . '%');
     }
 

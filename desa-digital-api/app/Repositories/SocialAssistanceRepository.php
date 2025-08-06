@@ -13,7 +13,7 @@ class SocialAssistanceRepository implements SocialAssistanceRepositoryInterface
         bool $execute
     ) {
         $query = SocialAssistance::where(function ($query) use ($search) {
-            if(!$search){
+            if($search){
                 $query->search($search);
             }
         });
