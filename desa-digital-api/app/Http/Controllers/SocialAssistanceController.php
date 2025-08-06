@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
+use App\Http\Resources\SocialAssistanceResource;
 use App\Interfaces\SocialAssistanceRepositoryInterface;
+use App\Models\SocialAssistance;
 use Illuminate\Http\Request;
 
 class SocialAssistanceController extends Controller
@@ -24,8 +27,10 @@ class SocialAssistanceController extends Controller
                 $request->limit,
                 true
             );
+
+            return ResponseHelper::jsonResponse(true, 'Data Asisten Sosial Berhasil Berhasil Diambil', SocialAssistanceResource::collection($socialAssistances), 200);
         } catch (\Exception $e) {
-            //throw $th;
+            return ResponseHelper::jsonResponse(true, 'Data Asisten Sosial Gagal Diambil', null, 500);
         }
     }
 
