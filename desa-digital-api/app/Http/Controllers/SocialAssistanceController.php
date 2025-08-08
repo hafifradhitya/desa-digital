@@ -6,6 +6,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\SocialAssistanceStoreRequest;
 use App\Http\Requests\SocialAssistanceUpdateRequest;
 use App\Http\Resources\PaginateResource;
+use App\Http\Resources\SocialAssistanceRecipientResource;
 use App\Http\Resources\SocialAssistanceResource;
 use App\Interfaces\SocialAssistanceRepositoryInterface;
 use App\Models\SocialAssistance;
@@ -50,7 +51,7 @@ class SocialAssistanceController extends Controller
                 $request['row_per_page']
             );
 
-            return ResponseHelper::jsonResponse(true, 'Data Bantuan Sosial Berhasil Diambil', PaginateResource::make($socialAssistances, SocialAssistanceResource::class), 200);
+            return ResponseHelper::jsonResponse(true, 'Data Bantuan Sosial Berhasil Diambil', PaginateResource::make($socialAssistances, SocialAssistanceRecipientResource::class), 200);
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }
@@ -120,6 +121,22 @@ class SocialAssistanceController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $socialAssistance = $this->socialAssistanceRepository->getById(
+                $id
+            );
+
+            if(!$socialAssistance){
+                return ResponseHelper::jsonResponse(false, 'Bantuan Sosial Tidak Ditemukan', null, 404);
+            }
+
+            $socialAssistance = $this->socialAssistanceRepository->delete(
+                $id
+            );
+
+            return ResponseHelper::jsonResponse(true, 'Bantuan Sosial Berhasil Dihapus', null, 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 }
