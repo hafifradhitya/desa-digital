@@ -20,6 +20,8 @@ class SocialAssistanceRecipientRepository implements SocialAssistanceRecipientRe
             }
         });
 
+        $query->orderBy('created_at', 'desc');
+
         if($limit){
             $query->take($limit);
         }
@@ -63,7 +65,7 @@ class SocialAssistanceRecipientRepository implements SocialAssistanceRecipientRe
             }
 
             if(isset($data['status'])){
-                $socialAssistanceRecipient->proof = $data['proof'];
+                $socialAssistanceRecipient->status = $data['status'];
             }
 
             $socialAssistanceRecipient->save();

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\HeadOfFamily;
 use App\Models\SocialAssistance;
+use App\Models\SocialAssistanceRecipient;
 use Database\Factories\SocialAssistanceRecipientFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -20,9 +21,9 @@ class SocialAssistanceRecipientSeeder extends Seeder
 
         foreach ($socialAssistances as $socialAssistance) {
             foreach ($headOfFamilies as $headOfFamily) {
-                SocialAssistanceRecipientFactory::new()->create([
-                    'social_assistance_id' => $socialAssistance->id,
+                SocialAssistanceRecipient::factory()->create([
                     'head_of_family_id' => $headOfFamily->id,
+                    'social_assistance_id' => $socialAssistance->id,
                 ]);
             }
         }

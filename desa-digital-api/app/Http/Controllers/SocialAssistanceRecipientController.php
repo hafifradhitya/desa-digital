@@ -60,10 +60,12 @@ class SocialAssistanceRecipientController extends Controller
      */
     public function store(SocialAssistanceRecipientStoreRequest $request)
     {
-        $request = $request->validate();
+        $request = $request->validated();
 
         try {
             $socialAssistanceRecipient = $this->socialAssistanceRecipientRepository->create($request);
+            $socialAssistanceRecipient->load(['socialAssistance', 'headOfFamily']);
+
             return ResponseHelper::jsonResponse(true, 'Data Penerima Bantuan Sosial Berhasil Dibuat', new SocialAssistanceRecipientResource($socialAssistanceRecipient), 200);
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);

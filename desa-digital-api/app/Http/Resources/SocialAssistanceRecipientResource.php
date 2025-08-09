@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\HeadOfFamily;
 use App\Models\SocialAssistance;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -16,9 +17,8 @@ class SocialAssistanceRecipientResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'social_assistance' => new SocialAssistanceResource($this->whenLoaded('socialAssistance')),
-            'head_of_family' => new HeadOfFamilyResource($this->whenLoaded('headOfFamily')),
+            'social_assistance' => new SocialAssistanceResource($this->socialAssistance),
+            'head_of_family'    => new HeadOfFamilyResource($this->headOfFamily),
             'amount' => $this->amount,
             'reason' => $this->reason,
             'bank' => $this->bank,
