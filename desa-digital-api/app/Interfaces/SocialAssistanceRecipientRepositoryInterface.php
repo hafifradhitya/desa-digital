@@ -15,6 +15,10 @@ interface SocialAssistanceRecipientRepositoryInterface
         ?int $rowPerPage
     );
 
+    public function getById(
+        int $id
+    );
+
     public function create(
         array $data
     );
