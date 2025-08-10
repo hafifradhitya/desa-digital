@@ -16,7 +16,7 @@ interface SocialAssistanceRecipientRepositoryInterface
     );
 
     public function getById(
-        int $id
+        string $id
     );
 
     public function create(
