@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\SocialAssistanceRecipientStoreRequest;
+use App\Http\Requests\SocialAssistanceRecipientUpdateRequest;
 use App\Http\Resources\PaginateResource;
 use App\Http\Resources\SocialAssistanceRecipientResource;
 use App\Http\Resources\SocialAssistanceResource;
@@ -64,7 +65,7 @@ class SocialAssistanceRecipientController extends Controller
 
         try {
             $socialAssistanceRecipient = $this->socialAssistanceRecipientRepository->create($request);
-            $socialAssistanceRecipient->load(['socialAssistance', 'headOfFamily']);
+            // $socialAssistanceRecipient->load(['socialAssistance', 'headOfFamily']);
 
             return ResponseHelper::jsonResponse(true, 'Data Penerima Bantuan Sosial Berhasil Dibuat', new SocialAssistanceRecipientResource($socialAssistanceRecipient), 200);
         } catch (\Exception $e) {
@@ -95,9 +96,29 @@ class SocialAssistanceRecipientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(SocialAssistanceRecipientUpdateRequest $request, string $id)
     {
-        //
+        $request = $request->validated();
+
+        try {
+            $socialAssistanceRecipient = $this->socialAssistanceRecipientRepository->getById(
+                $id
+            );
+
+            if(!$socialAssistanceRecipient){
+                return ResponseHelper::jsonResponse(false, 'Data Penerima Bantuan Sosial Tidak Ditemukan', null, 404);
+            }
+
+            $socialAssistanceRecipient = $this->socialAssistanceRecipientRepository->update(
+                $id,
+                $request
+            );
+            // $socialAssistanceRecipient->load(['socialAssistance', 'headOfFamily']);
+
+            return ResponseHelper::jsonResponse(true, 'Data Penerima Bantuan Sosial Berhasil Diupdate', new SocialAssistanceRecipientResource($socialAssistanceRecipient), 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 
     /**
