@@ -27,6 +27,8 @@ class EventRepository implements EventRepositoryInterface
         if ($execute) {
             return $query->get();
         }
+
+        return $query;
     }
 
     public function getAllPaginated(
