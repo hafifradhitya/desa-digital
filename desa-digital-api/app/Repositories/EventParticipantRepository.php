@@ -47,6 +47,14 @@ class EventParticipantRepository implements EventParticipantRepositoryInterface
         return $query->paginate($rowPerPage);
     }
 
+    public function getById(
+        string $id
+    ) {
+        $query = EventParticipant::where('id', $id);
+
+        return $query->first();
+    }
+
     public function create(
         array $data
     ) {
