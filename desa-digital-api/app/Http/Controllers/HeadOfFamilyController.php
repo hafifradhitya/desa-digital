@@ -34,7 +34,7 @@ class HeadOfFamilyController extends Controller
 
             return ResponseHelper::jsonResponse(true, 'Data Kepala keluarga Berhasil Diambil', HeadOfFamilyResource::collection($headOfFamilies), 200);
         } catch (\Exception $e) {
-            return ResponseHelper::jsonResponse(true, 'Data Kepala keluarga Gagal Diambil', null, 500);
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }
     }
 

@@ -3,7 +3,10 @@
 namespace App\Repositories;
 
 use App\Interfaces\EventParticipantRepositoryInterface;
+use App\Models\Event;
 use App\Models\EventParticipant;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class EventParticipantRepository implements EventParticipantRepositoryInterface
 {
@@ -42,5 +45,31 @@ class EventParticipantRepository implements EventParticipantRepositoryInterface
         );
 
         return $query->paginate($rowPerPage);
+    }
+
+    public function create(
+        array $data
+    ) {
+        DB::beginTransaction();
+
+        try {
+            $event = Event::where('id', $data['event_id'])->first();
+
+            $eventParticipant = new EventParticipant();
+            $eventParticipant->event_id = $data['event_id'];
+            $eventParticipant->head_of_family_id = $data['head_of_family_id'];
+            $eventParticipant->quantity = $data['quantity'];
+            $eventParticipant->total_price = $event->price * $data['quantity'];
+            $eventParticipant->payment_status = "pending";
+            $eventParticipant->save();
+
+            DB::commit();
+
+            return $eventParticipant;
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            throw new Exception($e->getMessage());
+        }
     }
 }
