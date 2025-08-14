@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\DevelopmentStoreRequest;
 use App\Http\Resources\DevelopmentResource;
 use App\Http\Resources\PaginateResource;
 use App\Interfaces\DevelopmentRepositoryInterface;
@@ -28,7 +29,7 @@ class DevelopmentController extends Controller
                 true
             );
 
-            return ResponseHelper::jsonResponse(true, 'Data Event Berhasil Diambil', DevelopmentResource::collection($development), 200);
+            return ResponseHelper::jsonResponse(true, 'Data Pembangunan Berhasil Diambil', DevelopmentResource::collection($development), 200);
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }
@@ -47,7 +48,7 @@ class DevelopmentController extends Controller
                 $request['row_per_page'],
             );
 
-            return ResponseHelper::jsonResponse(true, 'Data Event Berhasil Diambil', PaginateResource::make($development, DevelopmentResource::class), 200);
+            return ResponseHelper::jsonResponse(true, 'Data Pembangunan Berhasil Diambil', PaginateResource::make($development, DevelopmentResource::class), 200);
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }
@@ -57,9 +58,17 @@ class DevelopmentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(DevelopmentStoreRequest $request)
     {
-        //
+        $request = $request->validated();
+
+        try {
+            $development = $this->developmentRepository->create($request);
+
+            return ResponseHelper::jsonResponse(true, 'Data Pembangunan Berhasil Dibuat', new DevelopmentResource($development), 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 
     /**
