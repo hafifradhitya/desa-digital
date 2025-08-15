@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\DevelopmentApplicant;
 use App\Models\EventParticipant;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -24,6 +25,7 @@ class DatabaseSeeder extends Seeder
             EventSeeder::class,
             EventParticipantSeeder::class,
             DevelopmentSeeder::class,
+            DevelopmentApplicantSeeder::class,
         ]);
     }
 }
