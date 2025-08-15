@@ -46,6 +46,14 @@ class DevelopmentApplicantRepository implements DevelopmentApplicantRepositoryIn
         return $query->paginate($rowPerPage);
     }
 
+    public function getById(
+        string $id
+    ) {
+        $query = DevelopmentApplicant::where('id', $id);
+
+        return $query->first();
+    }
+
     public function create(
         array $data
     ) {
