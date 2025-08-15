@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\DevelopmentApplicantStoreRequest;
+use App\Http\Requests\DevelopmentStoreRequest;
 use App\Http\Resources\DevelopmentApplicantResource;
 use App\Http\Resources\PaginateResource;
 use App\Interfaces\DevelopmentApplicantRepositoryInterface;
@@ -58,9 +60,17 @@ class DevelopmentApplicantController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(DevelopmentApplicantStoreRequest $request)
     {
-        //
+        $request = $request->validated();
+
+        try {
+            $developmentApplicant = $this->developmentApplicantRepository->create($request);
+
+            return ResponseHelper::jsonResponse(true, 'Data Pendaftar Pembangunan Berhasil Dibuat', new DevelopmentApplicantResource($developmentApplicant), 201);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 
     /**
