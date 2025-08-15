@@ -91,7 +91,7 @@ class DevelopmentRepository implements DevelopmentRepositoryInterface
             $development = Development::find($id);
 
             if(isset($data['thumbnail'])) {
-                $development->thumbnail = $data['thumbnail']->store('assets/dvelopments'. 'public');
+                $development->thumbnail = $data['thumbnail']->store('assets/developments'. 'public');
             }
 
             $development->name = $data['name'];
