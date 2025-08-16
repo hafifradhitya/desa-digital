@@ -11,7 +11,6 @@ interface ProfileRepositoryInterface
     );
 
     public function update(
-        string $id,
         array $data
     );
 }

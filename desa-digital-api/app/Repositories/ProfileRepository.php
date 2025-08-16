@@ -50,13 +50,12 @@ class ProfileRepository implements ProfileRepositoryInterface
     }
 
     public function update(
-        string $id,
         array $data
     ) {
         DB::beginTransaction();
 
         try {
-            $profile = Profile::find($id);
+            $profile = Profile::first();
 
             if(isset($data['thumbnail'])) {
                 $profile->thumbnail = $data['thumbnail']->store('assets/profiles'. 'public');
