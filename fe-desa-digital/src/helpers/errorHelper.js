@@ -8,6 +8,6 @@ export function handleError(error) {
     } else if (error.response && error.response.status === 500) {
         return error.response.data.message
     } else {
-        alert('Something wnet wrong. Please try again later.')
+        alert('Something went wrong. Please try again later.')
     }
 }
