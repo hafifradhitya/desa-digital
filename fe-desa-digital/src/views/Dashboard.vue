@@ -1,48 +1,126 @@
 <script setup>
 import { useDashboardStore } from '@/stores/dashboard';
 import { storeToRefs } from 'pinia';
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { Chart } from 'chart.js/auto';
 
-
 const dashboardStore = useDashboardStore();
-const { dashboardData, loading } = storeToRefs(dashboardStore)
-const { fetchDashboardData } = dashboardStore
+const { dashboardData, loading } = storeToRefs(dashboardStore);
+const { fetchDashboardData } = dashboardStore;
 
-const getResidentStatistic = () => {
+let chartInstance = null;
+
+const renderChart = () => {
   const chart = document.getElementById('myChart');
-  new Chart(chart, {
+
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  chartInstance = new Chart(chart, {
     type: 'doughnut',
     data: {
-      datasets: [{
-        data: [114210, 97200, 24300, 7290],
-        backgroundColor: [
-          '#34613A',
-          '#8EBD55',
-          '#FA7139',
-          '#FBAD48'
-        ],
-      }]
+      labels: ['Pria', 'Wanita', 'Anak-anak', 'Balita'],
+      datasets: [
+        {
+          data: [
+            dashboardData.value?.resident_statistics?.male || 0,
+            dashboardData.value?.resident_statistics?.female || 0,
+            dashboardData.value?.resident_statistics?.children || 0,
+            dashboardData.value?.resident_statistics?.toddler || 0
+          ],
+          backgroundColor: ['#34613A', '#8EBD55', '#FA7139', '#FBAD48']
+        }
+      ]
     },
     options: {
-      scales: {
-        display: false
+      plugins: {
+        legend: { display: false }
       },
       datasets: {
         doughnut: {
           spacing: 2,
           borderRadius: 6,
-          cutout: '69%',
+          cutout: '69%'
         }
-      },
+      }
     }
   });
+};
+
+watch(dashboardData, (newVal) => {
+  if (newVal && newVal.resident_statistics) {
+    renderChart();
+  }
+});
+
+onMounted(async () => {
+  await fetchDashboardData();
+});
+
+function getIcon(thumbnail) {
+  const moneyIcon = new URL('@/assets/images/icons/money-dark-green.svg', import.meta.url).href;
+  const bagIcon = new URL('@/assets/images/icons/bag-2-dark-green.svg', import.meta.url).href;
+
+  if (!thumbnail) return moneyIcon;
+
+  const c = thumbnail.toLowerCase();
+  if (c.includes('uang') || c.includes('tunai')) return moneyIcon;
+  if (c.includes('beras') || c.includes('pangan')) return bagIcon;
+
+  return moneyIcon;
 }
 
-onMounted(() => {
-  fetchDashboardData(),
-  getResidentStatistic()
-})
+
+function formatAssistanceAmount(item) {
+  if (item.amount) {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    }).format(item.amount);
+  }
+  return item.social_assistance?.name ?? 'Bantuan';
+}
+
+function getStatusClass(status) {
+  switch ((status || '').toLowerCase()) {
+    case 'approved':
+      return 'bg-desa-dark-green';
+    case 'rejected':
+      return 'bg-desa-orange';
+    case 'pending':
+    default:
+      return 'bg-desa-yellow';
+  }
+}
+
+function translateStatus(status) {
+  switch ((status || '').toLowerCase()) {
+    case 'approved':
+      return 'Diterima';
+    case 'rejected':
+      return 'Ditolak';
+    case 'pending':
+    default:
+      return 'Menunggu';
+  }
+}
+
+// function getThumbnail(path) {
+//   if (!path) {
+//     // fallback jika tidak ada thumbnail
+//     return new URL('@/assets/images/icons/money-dark-green.svg', import.meta.url).href;
+//   }
+
+//   // jika path sudah URL penuh (misal dari S3), kembalikan langsung
+//   if (path.startsWith('http://') || path.startsWith('https://')) {
+//     return path;
+//   }
+
+//   // jika path local dari storage Laravel
+//   return `/storage/${path}`;
+// }
 </script>
 
 <template>
@@ -113,7 +191,8 @@ onMounted(() => {
       <div class="card flex flex-col w-full rounded-2xl p-6 gap-3 bg-white">
         <div class="flex items-center justify-between">
           <p class="font-medium text-desa-secondary">Total Events</p>
-          <img src="@/assets/images/icons/calendar-2-foreshadow-background.svg" class="flex size-12 shrink-0" alt="icon">
+          <img src="@/assets/images/icons/calendar-2-foreshadow-background.svg" class="flex size-12 shrink-0"
+            alt="icon">
         </div>
         <div class="flex flex-col gap-[6px]">
           <p class="font-semibold text-[32px] leading-10">{{ dashboardData?.events }}</p>
@@ -149,81 +228,41 @@ onMounted(() => {
       <hr class="border-desa-foreshadow">
       <div class="flex flex-col gap-4 p-6">
         <p class="font-semibold text-[20px] leading-[25px] text-left w-full">Bansos Terakhir</p>
-        <div class="card flex items-center w-full gap-3">
-          <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow items-center justify-center">
-            <img src="@/assets/images/icons/money-dark-green.svg" class="flex size-9 shrink-0" alt="icon">
-          </div>
-          <div class="flex flex-col gap-[6px] w-full">
-            <p class="font-semibold text-xl leading-[25px]">Rp362.500.000</p>
-            <div class="flex items-center gap-0.5 font-medium text-desa-secondary">
-              <img src="@/assets/images/icons/profile-secondary-green.svg" class="flex size-[18px] shrink-0" alt="icon">
-              <span class="line-clamp-1">
-                Diberikan oleh Shayna Sakura
-              </span>
+
+        <template v-if="dashboardData?.latest_social_assistances?.length">
+          <template v-for="(item, index) in dashboardData.latest_social_assistances" :key="index">
+            <div class="card flex items-center w-full gap-3">
+              <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow items-center justify-center">
+                <img :src="getIcon(item.social_assistance?.thumbnail)" class="flex size-9 shrink-0" alt="icon" />
+              </div>
+              <div class="flex flex-col gap-[6px] w-full">
+                <p class="font-semibold text-xl leading-[25px]">
+                  {{ formatAssistanceAmount(item) }}
+                </p>
+                <div class="flex items-center gap-0.5 font-medium text-desa-secondary">
+                  <img src="@/assets/images/icons/profile-secondary-green.svg" class="flex size-[18px] shrink-0"
+                    alt="icon" />
+                  <span class="line-clamp-1">
+                    Diberikan oleh {{ item.head_of_family?.user?.name ?? '-' }}
+                  </span>
+                </div>
+              </div>
+              <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0"
+                :class="getStatusClass(item.status)">
+                <span class="font-semibold text-xs text-white uppercase">
+                  {{ translateStatus(item.status) }}
+                </span>
+              </div>
             </div>
-          </div>
-          <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-yellow">
-            <span class="font-semibold text-xs text-white uppercase">Menunggu</span>
-          </div>
-        </div>
-        <hr class="border-desa-foreshadow last-of-type:hidden">
-        <div class="card flex items-center w-full gap-3">
-          <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow items-center justify-center">
-            <img src="@/assets/images/icons/bag-2-dark-green.svg" class="flex size-9 shrink-0" alt="icon">
-          </div>
-          <div class="flex flex-col gap-[6px] w-full">
-            <p class="font-semibold text-xl leading-[25px]">Beras 10kg</p>
-            <div class="flex items-center gap-0.5 font-medium text-desa-secondary">
-              <img src="@/assets/images/icons/profile-secondary-green.svg" class="flex size-[18px] shrink-0" alt="icon">
-              <span class="line-clamp-1">
-                Diberikan oleh Angga Hikari
-              </span>
-            </div>
-          </div>
-          <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-dark-green">
-            <span class="font-semibold text-xs text-white uppercase">Diterima</span>
-          </div>
-        </div>
-        <hr class="border-desa-foreshadow last-of-type:hidden">
-        <div class="card flex items-center w-full gap-3">
-          <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow items-center justify-center">
-            <img src="@/assets/images/icons/money-dark-green.svg" class="flex size-9 shrink-0" alt="icon">
-          </div>
-          <div class="flex flex-col gap-[6px] w-full">
-            <p class="font-semibold text-xl leading-[25px]">Rp52.500.000</p>
-            <div class="flex items-center gap-0.5 font-medium text-desa-secondary">
-              <img src="@/assets/images/icons/profile-secondary-green.svg" class="flex size-[18px] shrink-0" alt="icon">
-              <span class="line-clamp-1">
-                Diberikan oleh Obito Uciha
-              </span>
-            </div>
-          </div>
-          <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-orange">
-            <span class="font-semibold text-xs text-white uppercase">Ditolak</span>
-          </div>
-        </div>
-        <hr class="border-desa-foreshadow last-of-type:hidden">
-        <div class="card flex items-center w-full gap-3">
-          <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow items-center justify-center">
-            <img src="@/assets/images/icons/money-dark-green.svg" class="flex size-9 shrink-0" alt="icon">
-          </div>
-          <div class="flex flex-col gap-[6px] w-full">
-            <p class="font-semibold text-xl leading-[25px]">Rp52.500.000</p>
-            <div class="flex items-center gap-0.5 font-medium text-desa-secondary">
-              <img src="@/assets/images/icons/profile-secondary-green.svg" class="flex size-[18px] shrink-0" alt="icon">
-              <span class="line-clamp-1">
-                Diberikan oleh Masayoshi
-              </span>
-            </div>
-          </div>
-          <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-dark-green">
-            <span class="font-semibold text-xs text-white uppercase">Diterima</span>
-          </div>
-        </div>
-        <hr class="border-desa-foreshadow last-of-type:hidden">
-        <div class="hidden m-auto h-[384px] flex flex-col shrink-0 justify-center items-center gap-6">
-          <img src="@/assets/images/icons/bag-cross-secondary.svg" class="flex size-[52px] shrink-0" alt="icon">
-          <p class="font-medium leading-5 text-center text-desa-secondary">Ups, nampaknya belum bansos</p>
+            <hr class="border-desa-foreshadow last-of-type:hidden" />
+          </template>
+        </template>
+
+        <div v-else class="m-auto h-[384px] flex flex-col shrink-0 justify-center items-center gap-6">
+          <img src="@/assets/images/icons/bag-cross-secondary.svg" class="flex size-[52px] shrink-0" alt="icon" />
+          <p class="font-medium leading-5 text-center text-desa-secondary">
+            Ups, nampaknya belum ada bansos
+          </p>
         </div>
       </div>
     </section>
@@ -362,9 +401,10 @@ onMounted(() => {
               alt="icon">
           </div>
           <div class="flex flex-col gap-[6px]">
-            <p class="font-semibold text-[32px] leading-10">1.200</p>
+            <p class="font-semibold text-[32px] leading-10">20</p>
             <div class="flex items-center gap-0.5">
-              <img src="@/assets/images/icons/trend-up-dark-green-fill.svg" class="flex size-[18px] shrink-0" alt="icon">
+              <img src="@/assets/images/icons/trend-up-dark-green-fill.svg" class="flex size-[18px] shrink-0"
+                alt="icon">
               <p class="font-medium text-sm text-desa-secondary">
                 <span class="text-desa-dark-green">+12%</span>
                 dari bulan sebelumnya
@@ -455,15 +495,21 @@ onMounted(() => {
     <section id="statistik-Penduduk" class="flex flex-col flex-1 shrink-0 gap-4 p-6 rounded-2xl bg-white">
       <div class="flex items-center justify-between">
         <p class="font-medium text-desa-secondary">Statistics Penduduk</p>
-        <img src="@/assets/images/icons/profile-2user-foreshadow-background.svg" class="flex size-12 shrink-0" alt="icon">
+        <img src="@/assets/images/icons/profile-2user-foreshadow-background.svg" class="flex size-12 shrink-0"
+          alt="icon">
       </div>
+
+      <!-- lingkaran chart -->
       <div class="relative">
         <div class="absolute flex flex-col gap-1 justify-center items-center text-center inset-0">
-          <p class="font-semibold text-[32px] leading-10">243.000</p>
+          <!-- jumlah total penduduk dari API -->
+          <p class="font-semibold text-[32px] leading-10">{{ dashboardData?.residents || 0 }}</p>
           <p class="font-medium text-sm text-desa-secondary">Jumlah Penduduk</p>
         </div>
         <canvas id="myChart" class="size-[288px] mx-auto"></canvas>
       </div>
+
+      <!-- breakdown -->
       <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
@@ -474,11 +520,12 @@ onMounted(() => {
             <p class="font-medium text-sm text-desa-secondary">Rentang usia: 32-36 tahun</p>
           </div>
           <p class="flex items-center font-medium leading-5">
-            114.210
+            {{ dashboardData?.resident_statistics?.male || 0 }}
             <img src="@/assets/images/icons/user-black.svg" class="flex size-[18px] shrink-0 ml-0.5" alt="icon">
           </p>
         </div>
         <hr class="border-desa-foreshadow">
+
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <p class="font-medium leading-5 flex">
@@ -488,11 +535,12 @@ onMounted(() => {
             <p class="font-medium text-sm text-desa-secondary">Rentang usia: 26-31 tahun</p>
           </div>
           <p class="flex items-center font-medium leading-5">
-            97.200
+            {{ dashboardData?.resident_statistics?.female || 0 }}
             <img src="@/assets/images/icons/user-black.svg" class="flex size-[18px] shrink-0 ml-0.5" alt="icon">
           </p>
         </div>
         <hr class="border-desa-foreshadow">
+
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <p class="font-medium leading-5 flex">
@@ -502,11 +550,12 @@ onMounted(() => {
             <p class="font-medium text-sm text-desa-secondary">Rentang usia: 6-12 tahun</p>
           </div>
           <p class="flex items-center font-medium leading-5">
-            24.300
+            {{ dashboardData?.resident_statistics?.children || 0 }}
             <img src="@/assets/images/icons/user-black.svg" class="flex size-[18px] shrink-0 ml-0.5" alt="icon">
           </p>
         </div>
         <hr class="border-desa-foreshadow">
+
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
             <p class="font-medium leading-5 flex">
@@ -516,7 +565,7 @@ onMounted(() => {
             <p class="font-medium text-sm text-desa-secondary">Rentang usia: 0-5 tahun</p>
           </div>
           <p class="flex items-center font-medium leading-5">
-            7.290
+            {{ dashboardData?.resident_statistics?.toddler || 0 }}
             <img src="@/assets/images/icons/user-black.svg" class="flex size-[18px] shrink-0 ml-0.5" alt="icon">
           </p>
         </div>

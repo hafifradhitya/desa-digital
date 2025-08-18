@@ -29,9 +29,4 @@ class DevelopmentApplicant extends Model
     {
         return $this->belongsTo(Development::class);
     }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 }

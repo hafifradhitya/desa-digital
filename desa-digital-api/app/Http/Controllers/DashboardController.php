@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Interfaces\DashboardRepositoryInterface;
-use App\Repositories\DashboardRepository;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -19,7 +17,6 @@ class DashboardController extends Controller
     {
         try {
             $data = $this->dashboardRepository->getDashboardData();
-
             return ResponseHelper::jsonResponse(true, 'Success', $data, 200);
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);

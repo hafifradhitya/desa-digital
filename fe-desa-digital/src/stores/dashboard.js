@@ -12,17 +12,15 @@ export const useDashboardStore = defineStore("dashboard", {
 
     actions: {
         async fetchDashboardData() {
-            this.loading = true
-
+            this.loading = true;
             try {
-                const response = await axiosInstance.get(`/dashboard/get-dashboard-data`)
-
-                this.dashboardData = response.data.data
+                const response = await axiosInstance.get(`/dashboard/get-dashboard-data`);
+                this.dashboardData = response.data.data;
             } catch (error) {
-                this.error = handleError(error)
+                this.error = handleError(error);
             } finally {
-                this.loading = false
+                this.loading = false;  
             }
         }
     }
-})
+});
