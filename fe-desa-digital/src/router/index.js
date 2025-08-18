@@ -37,6 +37,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+  console.log('Guard check:', { token: authStore.token, user: authStore.user })
 
   if (to.meta.requiresAuth) {
     if(authStore.token) {
@@ -44,16 +45,8 @@ router.beforeEach(async (to, from, next) => {
         if (!authStore.user) {
           await authStore.checkAuth()
         }
-
-        const userPermissions = authStore.user?.permissions || []
-
-        if(to.meta.permission && !userPermissions.includes(to.meta.permission)) {
-          next({ name: 'Error 403' })
-          return
-        }
-
         next()
-      } catch (error) {
+      } catch {
         next({ name: 'login' })
       }
     } else {
@@ -65,5 +58,6 @@ router.beforeEach(async (to, from, next) => {
     next()
   }
 })
+
 
 export default router
