@@ -2,6 +2,8 @@
 import SidebarItem from './SidebarItem.vue';
 import iconChartActive from '@/assets/images/icons/chart-square-dark-green.svg'
 import iconChartInactive from '@/assets/images/icons/chart-square-secondary-green.svg';
+import iconCrownActive from '@/assets/images/icons/crown-dark-green.svg';
+import iconCrownInactive from '@/assets/images/icons/crown-secondary-green.svg';
 
 const sidebarItem = [
     {
@@ -9,7 +11,13 @@ const sidebarItem = [
         path: '/',
         iconActive: iconChartActive,
         iconInactive: iconChartInactive
-    }
+    },
+    {
+        label: 'kepala Rumah',
+        path: '/head-of-family',
+        iconActive: iconCrownActive,
+        iconInactive: iconCrownInactive,
+    },
 ];
 </script>
 
