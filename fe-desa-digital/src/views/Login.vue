@@ -75,23 +75,15 @@ const handleSubmit = async () => {
                     <h2 class="font-medium leading-5 text-desa-secondary">Email Address</h2>
 
                     <Input v-model="form.email" type="email" placeholder="Ketik Email Kamu" 
-                        :error-message="errors?.email" 
+                        :error-message="error?.email" 
                         :icon="IconProfileSecondaryGreen" :filled-icon="IconProfileBlack" />
-
-                    <p v-if="error?.email" class="text-red-500 text-sm">
-                        {{ error.email[0] }}
-                    </p>
                 </div>
                 <div id="Password" class="flex flex-col gap-4">
                     <h2 class="font-medium leading-5 text-desa-secondary">Password</h2>
 
                     <Input v-model="form.password" type="password" placeholder="Ketik Password Kamu" 
-                        :error-message="errors?.password" 
+                        :error-message="error?.password" 
                         :icon="IconKeySecondaryGreen" :filled-icon="IconKeyBlack" />
-
-                    <p v-if="error?.password" class="text-red-500 text-sm">
-                        {{ error.password[0] }}
-                    </p>
 
                 </div>
             </section>

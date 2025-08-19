@@ -59,6 +59,22 @@ export const useHeadOfFamilyStore = defineStore("head-of-family", {
             }
         },
 
+        async createHeadOfFamily(payload) {
+            this.loading = true
+
+            try {
+                const response = await axiosInstance.post("/head-of-family", payload)
+
+                this.success = response.data.message
+
+                router.push({ name: 'head-of-family' })
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        },
+
         async deleteHeadOfFamily(id){
             this.loading = true
 

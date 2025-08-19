@@ -21,6 +21,10 @@ const props = defineProps({
     filledIcon: {
         type: String,
         required: true
+    },
+    errorMessage: {   // <-- tambahin ini
+        type: [String, Array],
+        default: ''
     }
 });
 
