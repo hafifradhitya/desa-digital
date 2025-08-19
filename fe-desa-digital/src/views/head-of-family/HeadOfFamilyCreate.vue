@@ -1,7 +1,7 @@
 <script setup>
 import { useHeadOfFamilyStore } from '@/stores/headOfFamily';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 import IconProfileSecondaryGreen from '@/assets/images/icons/user-secondary-green.svg';
 import IconProfileBlack from '@/assets/images/icons/user-black.svg';
@@ -15,10 +15,17 @@ import IconCallBlack from '@/assets/images/icons/call-black.svg';
 import IconBriefCaseSecondaryGreen from '@/assets/images/icons/briefcase-secondary-green.svg';
 import IconBriefCaseBlack from '@/assets/images/icons/briefcase-black.svg';
 
+import IconCalendarSecondaryGreen from '@/assets/images/icons/calendar-2-secondary-green.svg';
+import IconCalendarBlack from '@/assets/images/icons/calendar-2-black.svg';
+
+import IconKeySecondaryGreen from '@/assets/images/icons/key-secondary-green.svg';
+import IconKeyBlack from '@/assets/images/icons/key-black.svg';
+
 import Input from '@/components/ui/Input.vue';
+import { RouterLink } from 'vue-router';
 
 const headOfFamilyStore = useHeadOfFamilyStore()
-const { loading, error } = storeToRefs(useHeadOfFamilyStore)
+const { loading, error } = storeToRefs(headOfFamilyStore)
 const { createHeadOfFamily } = headOfFamilyStore
 
 const headOfFamily = ref({
@@ -30,6 +37,7 @@ const headOfFamily = ref({
     identity_number: null,
     gender: null,
     date_of_birth: null,
+    age: null,
     phone_number: null,
     occupation: null,
     marital_status: null
@@ -44,6 +52,21 @@ const handleImageChange = (event) => {
     headOfFamily.value.profile_picture = file
     headOfFamily.value.profile_picture_url = URL.createObjectURL(file)
 }
+
+const calculateAge = (dateString) => {
+    const today = new Date();
+    const birthDate = new Date(dateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
+
+watch(() => headOfFamily.value.date_of_birth, (newDate) => {
+    headOfFamily.value.age = calculateAge(newDate);
+})
 </script>
 
 <template>
@@ -122,22 +145,13 @@ const handleImageChange = (event) => {
                 <p class="font-medium leading-5 text-desa-secondary w-[calc(424/904*100%)]">Tanggal Lahir</p>
                 <div class="flex items-center gap-6 flex-1 shrink-0">
                     <label class="relative group peer w-full valid">
-                        <input required type="date" id="birthdate" placeholder="Masukan tanggal lahir"
-                            class="appearance-none outline-none w-full h-14 rounded-2xl ring-[1.5px] ring-desa-background focus:ring-desa-black p-4 pl-12 gap-2 font-medium invalid:text-desa-secondary transition-all duration-300 [&::-webkit-calendar-picker-indicator]:hidden"
-                            onclick="this.showPicker();">
-                        <div class="absolute transform -translate-y-1/2 top-1/2 left-4 flex size-6 shrink-0">
-                            <img src="@/assets/images/icons/calendar-2-secondary-green.svg"
-                                class="size-6 hidden group-has-[:invalid]:flex" alt="icon">
-                            <img src="@/assets/images/icons/calendar-2-black.svg"
-                                class="size-6 flex group-has-[:invalid]:hidden" alt="icon">
-                        </div>
-                        <img src="@/assets/images/icons/Checklist-dark-green-fill.svg"
-                            class="absolute transform -translate-y-1/2 top-1/2 right-4 size-6 shrink-0 hidden group-[.valid]:flex"
-                            alt="icon">
+                        <Input v-model="headOfFamily.date_of_birth" type="date" placeholder="Pilih Tanggal Lahir Kamu" 
+                        :error-message="error?.date_of_birth" 
+                        :icon="IconCalendarSecondaryGreen" :filled-icon="IconCalendarBlack" /> 
                     </label>
                     <div
                         class="w-[180px] flex shrink-0 h-[52px] rounded-2xl bg-desa-foreshadow p-4 font-medium leading-5 text-desa-dark-green justify-center">
-                        <p>Umur: <span id="Age">0</span> tahun</p>
+                        <p>Umur: <span id="Age">{{ headOfFamily.age }}</span> tahun</p>
                     </div>
                 </div>
             </section>
@@ -148,7 +162,8 @@ const handleImageChange = (event) => {
                     <label
                         class="group flex w-full items-center h-14 rounded-2xl p-4 ring-[1.5px] ring-desa-background gap-2 has-[:checked]:ring-desa-dark-green transition-setup">
                         <input type="radio" name="gender" id=""
-                            class="flex size-[18px] shrink-0 accent-desa-secondary checked:accent-desa-dark-green transition-setup">
+                            class="flex size-[18px] shrink-0 accent-desa-secondary checked:accent-desa-dark-green transition-setup"
+                            v-model="headOfFamily.gender" value="male">
                         <span
                             class="font-medium leading-5 text-desa-secondary w-full group-has-[:checked]:text-desa-dark-green transition-setup">
                             Pria
@@ -163,7 +178,8 @@ const handleImageChange = (event) => {
                     <label
                         class="group flex w-full items-center h-14 rounded-2xl p-4 ring-[1.5px] ring-desa-background gap-2 has-[:checked]:ring-desa-dark-green transition-setup">
                         <input type="radio" name="gender" id=""
-                            class="flex size-[18px] shrink-0 accent-desa-secondary checked:accent-desa-dark-green transition-setup">
+                            class="flex size-[18px] shrink-0 accent-desa-secondary checked:accent-desa-dark-green transition-setup"
+                            v-model="headOfFamily.gender" value="female">
                         <span
                             class="font-medium leading-5 text-desa-secondary w-full group-has-[:checked]:text-desa-dark-green transition-setup">
                             Wanita
@@ -184,7 +200,8 @@ const handleImageChange = (event) => {
                     <label
                         class="group flex w-full items-center h-14 rounded-2xl p-4 ring-[1.5px] ring-desa-background gap-2 has-[:checked]:ring-desa-dark-green transition-setup">
                         <input type="radio" name="status" id=""
-                            class="flex size-[18px] shrink-0 accent-desa-secondary checked:accent-desa-dark-green transition-setup">
+                            class="flex size-[18px] shrink-0 accent-desa-secondary checked:accent-desa-dark-green transition-setup"
+                            v-model="headOfFamily.marital_status" value="single">
                         <span
                             class="font-medium leading-5 text-desa-secondary w-full group-has-[:checked]:text-desa-dark-green transition-setup">
                             Belum Menikah
@@ -199,7 +216,8 @@ const handleImageChange = (event) => {
                     <label
                         class="group flex w-full items-center h-14 rounded-2xl p-4 ring-[1.5px] ring-desa-background gap-2 has-[:checked]:ring-desa-dark-green transition-setup">
                         <input type="radio" name="status" id=""
-                            class="flex size-[18px] shrink-0 accent-desa-secondary checked:accent-desa-dark-green transition-setup">
+                            class="flex size-[18px] shrink-0 accent-desa-secondary checked:accent-desa-dark-green transition-setup"
+                            v-model="headOfFamily.marital_status" value="married">
                         <span
                             class="font-medium leading-5 text-desa-secondary w-full group-has-[:checked]:text-desa-dark-green transition-setup">
                             Sudah Menikah
@@ -218,57 +236,36 @@ const handleImageChange = (event) => {
             <section id="Email" class="flex items-center justify-between">
                 <p class="font-medium leading-5 text-desa-secondary w-[calc(424/904*100%)]">Email Address</p>
                 <div class="flex flex-col gap-3 flex-1 shrink-0">
-                    <!-- add or remove .invalid class for error state (red border, icon, and text) -->
-                    <label class="relative group peer w-full invalid">
-                        <input type="email" placeholder="Masukan Email"
-                            class="appearance-none outline-none w-full h-14 rounded-2xl ring-[1.5px] ring-desa-background focus:ring-desa-black py-4 px-12 gap-2 font-medium placeholder:text-desa-secondary transition-all duration-300 group-[.invalid]:input-invalid-state">
-                        <div class="absolute transform -translate-y-1/2 top-1/2 left-4 flex size-6 shrink-0">
-                            <img src="@/assets/images/icons/sms-secondary-green.svg"
-                                class="size-6 hidden group-has-[:placeholder-shown]:flex group-[.invalid]:!hidden"
-                                alt="icon">
-                            <img src="@/assets/images/icons/sms-black.svg"
-                                class="size-6 flex group-has-[:placeholder-shown]:hidden group-[.invalid]:hidden"
-                                alt="icon">
-                            <img src="@/assets/images/icons/sms-red.svg" class="size-6 hidden group-[.invalid]:flex"
-                                alt="icon">
-                        </div>
-                        <img src="@/assets/images/icons/Checklist-dark-green-fill.svg"
-                            class="absolute transform -translate-y-1/2 top-1/2 right-4 size-6 shrink-0 hidden group-[.valid]:flex"
-                            alt="icon">
-                        <img src="@/assets/images/icons/close-circle-red-fill.svg"
-                            class="absolute transform -translate-y-1/2 top-1/2 right-4 size-6 shrink-0 hidden group-[.invalid]:flex"
-                            alt="icon">
-                    </label>
-                    <span class="font-medium text-sm text-desa-red hidden peer-[.invalid]:block">Email sudah
-                        digunakan</span>
+                    <Input v-model="headOfFamily.email" type="email" placeholder="Ketik Email Kamu" 
+                        :error-message="error?.email" 
+                        :icon="IconProfileSecondaryGreen" :filled-icon="IconProfileBlack" />
                 </div>
             </section>
             <hr class="border-desa-background" />
             <section id="Passwords" class="flex items-center justify-between">
                 <p class="font-medium leading-5 text-desa-secondary w-[calc(424/904*100%)]">Passwords</p>
                 <div class="flex flex-col gap-3 flex-1 shrink-0">
-                    <label class="relative group peer w-full">
-                        <input type="password" placeholder="Masukan Password"
-                            class="appearance-none outline-none w-full h-14 rounded-2xl ring-[1.5px] ring-desa-background focus:ring-desa-black py-4 px-12 gap-2 font-medium placeholder:text-desa-secondary transition-all duration-300 tracking-[4px] placeholder:tracking-normal">
-                        <div class="absolute transform -translate-y-1/2 top-1/2 left-4 flex size-6 shrink-0">
-                            <img src="@/assets/images/icons/key-secondary-green.svg"
-                                class="size-6 hidden group-has-[:placeholder-shown]:flex" alt="icon">
-                            <img src="@/assets/images/icons/key-black.svg"
-                                class="size-6 flex group-has-[:placeholder-shown]:hidden" alt="icon">
-                        </div>
-                    </label>
+                    <Input v-model="headOfFamily.password" type="password" placeholder="Ketik Password Kamu" 
+                        :error-message="error?.password" 
+                        :icon="IconKeySecondaryGreen" :filled-icon="IconKeyBlack" />
                 </div>
             </section>
             <hr class="border-desa-background" />
             <section id="Buttons" class="flex items-center justify-end gap-4">
-                <a href="kd-kepala-rumah.html">
+                <RouterLink :to="{ name: 'head-of-family' }">
                     <div
                         class="py-[18px] rounded-2xl bg-desa-red w-[180px] text-center flex justify-center font-medium text-white">
                         Batal, Tidak jadi</div>
-                </a>
-                <button disabled id="submitButton" type="submit"
-                    class="py-[18px] rounded-2xl disabled:bg-desa-grey w-[180px] text-center flex justify-center font-medium text-white bg-desa-dark-green transition-all duration-300">Create
-                    Now</button>
+                </RouterLink>
+                <button :disabled="loading" id="submitButton" type="submit"
+                    class="py-[18px] rounded-2xl disabled:bg-desa-grey w-[180px] text-center flex justify-center font-medium text-white bg-desa-dark-green transition-all duration-300">
+                    <span v-if="!loading">
+                        Create Now
+                    </span>
+                    <span v-else>
+                        Loading....
+                    </span>
+                </button>
             </section>
         </div>
     </form>
