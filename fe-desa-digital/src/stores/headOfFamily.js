@@ -45,6 +45,20 @@ export const useHeadOfFamilyStore = defineStore("head-of-family", {
             }
         },
 
+        async fetchHeadOfFamily(id){
+            this.loading = true
+
+            try {
+                const response = await axiosInstance.get(`/head-of-family/${id}`)
+
+                return response.data.data
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        },
+
         async deleteHeadOfFamily(id){
             this.loading = true
 
