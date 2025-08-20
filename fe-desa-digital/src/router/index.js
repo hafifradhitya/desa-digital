@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/auth'
 import HeadOfFamilies from '@/views/head-of-family/HeadOfFamilies.vue'
 import HeadOfFamily from '@/views/head-of-family/HeadOfFamily.vue'
 import HeadOfFamilyCreate from '@/views/head-of-family/HeadOfFamilyCreate.vue'
+import SocialAssistances from '@/views/social-assistance/SocialAssistances.vue'
 import SocialAssistance from '@/views/social-assistance/SocialAssistance.vue'
 
 const router = createRouter({
@@ -43,6 +44,12 @@ const router = createRouter({
         {
           path: 'social-assistance',
           name: 'social-assistance',
+          component: SocialAssistances,
+          meta: { requiresAuth: true, permission: 'social-assistance-list' }
+        },
+        {
+          path: 'social-assistance/:id',
+          name: 'manage-social-assistance',
           component: SocialAssistance,
           meta: { requiresAuth: true, permission: 'social-assistance-list' }
         },

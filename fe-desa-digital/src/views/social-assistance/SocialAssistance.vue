@@ -1,94 +1,222 @@
 <script setup>
-import CardList from '@/components/social-assistance/CardList.vue';
-import Pagination from '@/components/ui/Pagination.vue';
+import ModalDelete from '@/components/ui/ModalDelete.vue';
+import router from '@/router';
 import { useSocialAssistanceStore } from '@/stores/socialAssistance';
-import { debounce } from 'lodash';
+import { head } from 'lodash';
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch  } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
-const socialAssistanceStore = useSocialAssistanceStore()
-const { socialAssistances, meta, loading, error, success } = storeToRefs(socialAssistanceStore)
-const { fetchSocialAssistancePaginated } = socialAssistanceStore
+const route = useRoute()
 
-const serverOptions = ref({
-    page: 1,
-    row_per_page: 10
-});
+const socialAssistance = ref({})
 
-const filters = ref({
-    search: null
-})
+const socialAssistanceStore = useSocialAssistanceStore();
+const { loading } = storeToRefs(socialAssistanceStore)
+const { fetchSocialAssistance, deleteSocialAssistance } = socialAssistanceStore
 
 const fetchData = async () => {
-    await fetchSocialAssistancePaginated({...serverOptions.value,...filters.value})
+    const response = await fetchSocialAssistance(route.params.id)
+
+    socialAssistance.value = response
 }
 
-const debounceFetchData = debounce(fetchData, 500);
+const showModalDelete = ref(false)
+
+async function handleDelete() {
+    await deleteSocialAssistance(route.params.id)
+
+    router.push({ name: 'social-assistance' })
+}
 
 onMounted(fetchData)
-
-watch(serverOptions, () => {
-    fetchData()
-}, { deep: true })
-
-watch(filters, () => {
-    debounceFetchData()
-}, { deep: true })
 </script>
 
 <template>
     <div id="Header" class="flex items-center justify-between">
-        <h1 class="font-semibold text-2xl">List Bantuan Sosial</h1>
-        <a href="kd-bantuan-sosial-add.html"
-            class="flex items-center rounded-2xl py-4 px-6 gap-[10px] bg-desa-dark-green">
-            <img src="@/assets/images/icons/add-square-white.svg" class="flex size-6 shrink-0" alt="icon">
-            <p class="font-medium text-white">Add New</p>
-        </a>
-    </div>
-    <section id="List-Bantuan-Sosial" class="flex flex-col gap-[14px]">
-        <form id="Page-Search" class="flex items-center justify-between">
-            <div class="flex flex-col gap-3 w-[370px] shrink-0">
-                <label class="relative group peer w-full valid">
-                    <input v-model="filters.search" type="text" placeholder="Cari nama bantuan social"
-                        class="appearance-none outline-none w-full h-14 rounded-2xl ring-[1.5px] ring-desa-background focus:ring-desa-black py-4 pl-12 pr-6 gap-2 font-medium placeholder:text-desa-secondary transition-all duration-300">
-                    <div class="absolute transform -translate-y-1/2 top-1/2 left-4 flex size-6 shrink-0">
-                        <img src="@/assets/images/icons/receipt-search-secondary-green.svg"
-                            class="size-6 hidden group-has-[:placeholder-shown]:flex" alt="icon">
-                        <img src="@/assets/images/icons/receipt-search-black.svg"
-                            class="size-6 flex group-has-[:placeholder-shown]:hidden" alt="icon">
-                    </div>
-                </label>
+        <div class="flex flex-col gap-2">
+            <div class="flex gap-1 items-center leading-5 text-desa-secondary">
+                <p class="last-of-type:text-desa-dark-green last-of-type:font-semibold capitalize ">Bantuan sosial</p>
+                <span>/</span>
+                <p class="last-of-type:text-desa-dark-green last-of-type:font-semibold capitalize ">Manage bantuan
+                    sosial</p>
             </div>
-            <div class="options flex items-center gap-4">
-                <div class="flex items-center gap-[10px]">
-                    <span class="font-medium leading-5">Show</span>
-                    <div class="relative">
-                        <select v-model="serverOptions.row_per_page" name="" id=""
-                            class="appearance-none outline-none w-full h-14 rounded-2xl ring-[1.5px] ring-desa-background focus:ring-desa-black py-4 px-6 pr-[52px] gap-2 font-medium placeholder:text-desa-secondary transition-all duration-300">
-                            <option value="5" selected>5 Entries</option>
-                            <option value="10">10 Entries</option>
-                            <option value="20">20 Entries</option>
-                            <option value="30">30 Entries</option>
-                            <option value="40">40 Entries</option>
-                            <option value="50">50 Entries</option>
-                        </select>
-                        <img src="@/assets/images/icons/arrow-down-black.svg"
-                            class="flex size-6 shrink-0 absolute transform -translate-y-1/2 top-1/2 right-6" alt="icon">
+            <h1 class="font-semibold text-2xl">Manage Bantuan Sosial</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <button data-modal="Modal-Delete" class="flex items-center rounded-2xl py-4 px-6 gap-[10px] bg-desa-red"
+                @click="showModalDelete = true">
+                <p class="font-medium text-white">Hapus Data</p>
+                <img src="@/assets/images/icons/trash-white.svg" class="flex size-6 shrink-0" alt="icon">
+            </button>
+            <a href="kd-bantuan-sosial-edit.html"
+                class="flex items-center rounded-2xl py-4 px-6 gap-[10px] bg-desa-black">
+                <p class="font-medium text-white">Ubah Data</p>
+                <img src="@/assets/images/icons/edit-white.svg" class="flex size-6 shrink-0" alt="icon">
+            </a>
+        </div>
+    </div>
+    <div class="flex gap-[14px]">
+        <section id="Informasi-Bantuan-Sosial"
+            class="flex flex-col shrink-0 w-[calc(545/1000*100%)] h-fit rounded-3xl p-6 gap-6 bg-white">
+            <p class="font-medium leading-5 text-desa-secondary">Informasi Bantuan Sosial</p>
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex w-[120px] h-[100px] shrink-0 rounded-2xl overflow-hidden bg-desa-foreshadow">
+                    <img src="@/assets/images/thumbnails/kk-bansos-1.png" class="w-full h-full object-cover" alt="photo">
+                </div>
+                <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-soft-green">
+                    <span class="font-semibold text-xs text-white uppercase">Tersedia</span>
+                </div>
+            </div>
+            <div class="flex flex-col gap-[6px] w-full">
+                <p class="font-semibold text-xl">Bantuan Untuk Rakyat Kurang Mampu</p>
+                <p class="flex items-center gap-1">
+                    <img src="@/assets/images/icons/profile-secondary-green.svg" class="flex size-[18px] shrink-0"
+                        alt="icon">
+                    <span class="font-medium text-sm text-desa-secondary">PT Shaynakit Meningkatkan Bangsa</span>
+                </p>
+            </div>
+            <hr class="border-desa-foreshadow">
+            <div class="flex items-center w-full gap-3">
+                <div class="flex size-[52px] shrink-0 rounded-2xl bg-desa-foreshadow items-center justify-center">
+                    <img src="@/assets/images/icons/money-dark-green.svg" class="flex size-6 shrink-0" alt="icon">
+                </div>
+                <div class="flex flex-col gap-1 w-full">
+                    <p class="font-semibold text-lg leading-[22.5px] text-desa-dark-green">Rp120.000.000</p>
+                    <span class="font-medium text-desa-secondary">
+                        Uang Tunai
+                    </span>
+                </div>
+            </div>
+            <hr class="border-desa-foreshadow">
+            <div class="flex items-center w-full gap-3">
+                <div class="flex size-[52px] shrink-0 rounded-2xl bg-desa-blue/10 items-center justify-center">
+                    <img src="@/assets/images/icons/profile-2user-blue.svg" class="flex size-6 shrink-0" alt="icon">
+                </div>
+                <div class="flex flex-col gap-1 w-full">
+                    <p class="font-semibold text-lg leading-[22.5px] text-desa-blue">15.600 Warga</p>
+                    <span class="font-medium text-desa-secondary">
+                        Total Pengajuan
+                    </span>
+                </div>
+            </div>
+            <hr class="border-desa-foreshadow">
+            <div class="flex flex-col gap-3">
+                <p class="font-medium text-sm text-desa-secondary">Tentang Bantuan</p>
+                <p class="font-medium leading-8">Program Bantuan Sosial ini hadir untuk memberikan dukungan nyata bagi
+                    masyarakat yang membutuhkan. Kami berkomitmen membantu memenuhi kebutuhan dasar seperti pangan,
+                    kesehatan, dan pendidikan, demi meningkatkan kualitas hidup. Dengan semangat gotong royong, kami
+                    mengajak semua pihak untuk bersama-sama menciptakan perubahan positif.</p>
+            </div>
+        </section>
+        <section id="Penerima-Bansos-Terakhir"
+            class="flex flex-col flex-1 h-fit shrink-0 rounded-3xl p-6 gap-6 bg-white">
+            <p class="font-medium leading-5 text-desa-secondary">Penerima Bansos Terakhir</p>
+            <div id="List-Bansos-Terkahir" class="flex flex-col gap-6">
+                <div class="card flex flex-col rounded-2xl border border-desa-background p-4 gap-4">
+                    <div class="flex items-center justify-between">
+                        <p class="font-medium text-sm text-desa-secondary">Tue, 31 Dec 2024 </p>
+                        <img src="@/assets/images/icons/calendar-2-secondary-green.svg" class="flex size-[18px] shrink-0"
+                            alt="icon">
+                    </div>
+                    <hr class="border-desa-background">
+                    <div class="flex items-center gap-3">
+                        <div class="flex flex-col gap-[6px] w-full">
+                            <p class="font-semibold text-lg leading-5">Rp120.000.000</p>
+                            <p class="font-medium text-sm text-desa-secondary">Nominal Pengajuan</p>
+                        </div>
+                        <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-yellow">
+                            <span class="font-semibold text-xs text-white uppercase">Menunggu</span>
+                        </div>
+                    </div>
+                    <hr class="border-desa-background">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-0.5">
+                            <img src="@/assets/images/icons/profile-secondary-green.svg" class="flex size-[18px] shrink-0"
+                                alt="icon">
+                            <p class="font-medium text-sm text-desa-secondary">Diberikan Kepada:</p>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <p class="font-medium leading-5">Udin Louvre</p>
+                            <div class="flex size-8 shrink-0 rounded-full bg-desa-foreshadow overflow-hidden">
+                                <img src="@/assets/images/photos/kk-photo-5.png" class="w-full h-full object-cover"
+                                    alt="photo">
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button type="button"
-                    class="flex items-center gap-1 h-14 w-fit rounded-2xl border border-desa-background bg-white py-4 px-6">
-                    <img src="@/assets/images/icons/filter-black.svg" class="flex size-6 shrink-0" alt="icon">
-                    <span class="font-medium leading-5">Filter</span>
-                </button>
+                <div class="card flex flex-col rounded-2xl border border-desa-background p-4 gap-4">
+                    <div class="flex items-center justify-between">
+                        <p class="font-medium text-sm text-desa-secondary">Tue, 31 Dec 2024 </p>
+                        <img src="@/assets/images/icons/calendar-2-secondary-green.svg" class="flex size-[18px] shrink-0"
+                            alt="icon">
+                    </div>
+                    <hr class="border-desa-background">
+                    <div class="flex items-center gap-3">
+                        <div class="flex flex-col gap-[6px] w-full">
+                            <p class="font-semibold text-lg leading-5">Rp120.000.000</p>
+                            <p class="font-medium text-sm text-desa-secondary">Nominal Pengajuan</p>
+                        </div>
+                        <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-red">
+                            <span class="font-semibold text-xs text-white uppercase">Ditolak</span>
+                        </div>
+                    </div>
+                    <hr class="border-desa-background">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-0.5">
+                            <img src="@/assets/images/icons/profile-secondary-green.svg" class="flex size-[18px] shrink-0"
+                                alt="icon">
+                            <p class="font-medium text-sm text-desa-secondary">Diberikan Kepada:</p>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <p class="font-medium leading-5">Udin Louvre</p>
+                            <div class="flex size-8 shrink-0 rounded-full bg-desa-foreshadow overflow-hidden">
+                                <img src="@/assets/images/photos/kk-photo-5.png" class="w-full h-full object-cover"
+                                    alt="photo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card flex flex-col rounded-2xl border border-desa-background p-4 gap-4">
+                    <div class="flex items-center justify-between">
+                        <p class="font-medium text-sm text-desa-secondary">Tue, 31 Dec 2024 </p>
+                        <img src="@/assets/images/icons/calendar-2-secondary-green.svg" class="flex size-[18px] shrink-0"
+                            alt="icon">
+                    </div>
+                    <hr class="border-desa-background">
+                    <div class="flex items-center gap-3">
+                        <div class="flex flex-col gap-[6px] w-full">
+                            <p class="font-semibold text-lg leading-5">Rp120.000.000</p>
+                            <p class="font-medium text-sm text-desa-secondary">Nominal Pengajuan</p>
+                        </div>
+                        <div
+                            class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-dark-green">
+                            <span class="font-semibold text-xs text-white uppercase">Diterima</span>
+                        </div>
+                    </div>
+                    <hr class="border-desa-background">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-0.5">
+                            <img src="@/assets/images/icons/profile-secondary-green.svg" class="flex size-[18px] shrink-0"
+                                alt="icon">
+                            <p class="font-medium text-sm text-desa-secondary">Diberikan Kepada:</p>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <p class="font-medium leading-5">Udin Louvre</p>
+                            <div class="flex size-8 shrink-0 rounded-full bg-desa-foreshadow overflow-hidden">
+                                <img src="@/assets/images/photos/kk-photo-5.png" class="w-full h-full object-cover"
+                                    alt="photo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#"
+                    class="flex items-center justify-center h-14 rounded-2xl py-4 px-6 gap-[10px] bg-desa-dark-green">
+                    <span class="font-medium leading-5 text-white">View All</span>
+                </a>
             </div>
-        </form>
+        </section>
+    </div>
 
-        <CardList v-for="socialAssistance in socialAssistances" 
-          :key="socialAssistance.id" 
-          :item="socialAssistance" 
-          v-if="!loading" />
-
-        <Pagination :meta="meta" :server-options="serverOptions" />
-    </section>
+    <ModalDelete :show="showModalDelete" title="Hapus Bantuan Sosial" :loading="loading" @close="showModalDelete = false" @confirm="handleDelete" />
 </template>
