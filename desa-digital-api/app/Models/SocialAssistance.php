@@ -20,9 +20,9 @@ class SocialAssistance extends Model
         'is_available',
     ];
 
-    protected $casts = [
-        'is_available' => 'boolean'
-    ];
+    // protected $casts = [
+    //     'is_available' => 'boolean'
+    // ];
 
     public function scopeSearch($query, $search)
     {
