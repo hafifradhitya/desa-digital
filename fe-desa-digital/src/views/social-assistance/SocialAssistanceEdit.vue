@@ -1,7 +1,7 @@
 <script setup>
 import { useSocialAssistanceStore } from '@/stores/socialAssistance';
 import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import IconEditSecondaryGreen from '@/assets/images/icons/edit-secondary-green.svg'
@@ -13,10 +13,12 @@ import IconProfileSecondaryGreen from '@/assets/images/icons/user-secondary-gree
 import IconProfileBlack from '@/assets/images/icons/user-black.svg';
 
 import Input from '@/components/ui/Input.vue';
+import { formatRupiah, parseRupiah } from '@/helpers/format';
 
 const route = useRoute()
 
 const socialAssistance = ref({
+    id: null,
     thumbnail: null,
     thumbnail_url: null,
     name: null,
@@ -27,17 +29,36 @@ const socialAssistance = ref({
     is_available: true
 })
 
-const categories = ref(['staple', 'cash', 'subsidized fuel', 'health'])
 
 const socialAssistanceStore = useSocialAssistanceStore();
-const { loading } = storeToRefs(socialAssistanceStore)
-const { fetchSocialAssistance } = socialAssistanceStore
+const { loading, error } = storeToRefs(socialAssistanceStore)
+const { fetchSocialAssistance, updateSocialAssistance } = socialAssistanceStore
 
 const fetchData = async () => {
     const response = await fetchSocialAssistance(route.params.id)
 
     socialAssistance.value = response
+
+    socialAssistance.value.thumbnail_url = response.thumbnail
+    socialAssistance.value.thumbnail = null
 }
+
+const handleSubmit = async() => {
+    await updateSocialAssistance({
+        ...socialAssistance.value,
+        amount: parseRupiah(socialAssistance.value.amount)
+    })
+}
+
+const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    socialAssistance.value.thumbnail = file
+    socialAssistance.value.thumbnail_url = URL.createObjectURL(file)
+}
+
+watch(() => socialAssistance.value.amount, (newAmount) => {
+    socialAssistance.value.amount = formatRupiah(newAmount);
+})
 
 onMounted(fetchData)
 </script>
@@ -54,7 +75,7 @@ onMounted(fetchData)
             <h1 class="font-semibold text-2xl">Tambah Bantuan Sosial</h1>
         </div>
     </div>
-    <form action="kd-bantuan-sosial.html" id="myForm" class="capitalize">
+    <form @submit.prevent="handleSubmit" id="myForm" class="capitalize">
         <div class="shrink-0 rounded-3xl p-6 bg-white flex flex-col gap-6 h-fit">
             <section id="Thumbnail" class="flex items-center justify-between">
                 <h2 class="font-medium leading-5 text-desa-secondary w-[calc(424/904*100%)]">Thumbnail Bantuan Sosial
@@ -62,14 +83,16 @@ onMounted(fetchData)
                 <div class="flex-1 flex items-center justify-between">
                     <div id="Photo-Preview"
                         class="flex itce justify-center w-[120px] h-[100px] rounded-2xl overflow-hidden bg-desa-foreshadow">
-                        <img id="Photo" src="@/assets/images/thumbnails/kk-bansos-2.png" alt="image"
+                        <img id="Photo" :src="socialAssistance.thumbnail_url" alt="image"
                             class="size-full object-cover" />
                     </div>
                     <div class="relative">
-                        <input required id="File" type="file" name="file"
-                            class="absolute opacity-0 left-0 w-full top-0 h-full" />
+                        <input id="File" type="file" name="file"
+                            class="absolute opacity-0 left-0 w-full top-0 h-full" @change="handleImageChange"
+                            ref="thumbnail" />
                         <button id="Upload" type="button"
-                            class="relative flex items-center py-4 px-6 rounded-2xl bg-desa-black gap-[10px]">
+                            class="relative flex items-center py-4 px-6 rounded-2xl bg-desa-black gap-[10px]"
+                            @click="$refs.thumbnail.click()">
                             <img src="@/assets/images/icons/send-square-white.svg" alt="icon" class="size-6 shrink-0" />
                             <p class="font-medium leading-5 text-white">Upload</p>
                         </button>
@@ -219,14 +242,20 @@ onMounted(fetchData)
             </section>
             <hr class="border-desa-background w-[calc(100%+48px)] -mx-6" />
             <section id="Buttons" class="flex items-center justify-end gap-4">
-                <a href="kd-kepala-rumah.html">
+                <RouterLink :to="{name: 'manage-social-assistance', params: { id: socialAssistance.id }}">
                     <div
                         class="py-[18px] rounded-2xl bg-desa-red w-[180px] text-center flex justify-center font-medium text-white">
                         Batal, Tidak jadi</div>
-                </a>
-                <button disabled id="submitButton" type="submit"
-                    class="py-[18px] rounded-2xl disabled:bg-desa-grey w-[180px] text-center flex justify-center font-medium text-white bg-desa-dark-green transition-all duration-300">Save
-                    Changes</button>
+                </RouterLink>
+                <button :disabled="loading" id="submitButton" type="submit"
+                    class="py-[18px] rounded-2xl disabled:bg-desa-grey w-[180px] text-center flex justify-center font-medium text-white bg-desa-dark-green transition-all duration-300">
+                    <span v-if="!loading">
+                        Update Now
+                    </span>
+                    <span v-else>
+                        Loading....
+                    </span>
+                </button>
             </section>
         </div>
     </form>

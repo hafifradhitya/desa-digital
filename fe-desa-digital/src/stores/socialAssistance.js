@@ -47,6 +47,57 @@ export const useSocialAssistanceStore = defineStore("social-assistance", {
                 this.loading = false
             }
         },
+
+        // async updateSocialAssistance(payload){
+        //     this.loading = true
+
+        //     try {
+        //         const response = await axiosInstance.post(`/social-assistance/${payload.id}`, {
+        //             ...payload,
+        //             _method: 'PUT'
+        //         })
+
+        //         this.success = response.data.message
+
+        //         router.push({name: 'manage-social-assistance', params: {id: payload.id}})
+        //     } catch (error) {
+        //         this.error = handleError(error)
+        //     } finally {
+        //         this.loading = false
+        //     }
+        // },
+
+        async updateSocialAssistance(payload) {
+            this.loading = true
+            try {
+                const formData = new FormData()
+
+                Object.keys(payload).forEach(key => {
+                if (key === "thumbnail") {
+                    if (payload.thumbnail instanceof File) {
+                    formData.append("thumbnail", payload.thumbnail)
+                    }
+                } else if (key !== "thumbnail_url") {
+                    formData.append(key, payload[key])
+                }
+                })
+
+                formData.append("_method", "PUT")
+
+                const response = await axiosInstance.post(
+                `/social-assistance/${payload.id}`,
+                formData
+                )
+
+                this.success = response.data.message
+                router.push({ name: "manage-social-assistance", params: { id: payload.id } })
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        },
+
         async deleteSocialAssistance(id){
             this.loading = true
 
