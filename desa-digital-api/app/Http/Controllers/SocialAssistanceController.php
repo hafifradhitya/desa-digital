@@ -65,7 +65,7 @@ class SocialAssistanceController extends Controller implements HasMiddleware
                 $request['row_per_page']
             );
 
-            return ResponseHelper::jsonResponse(true, 'Data Bantuan Sosial Berhasil Diambil', PaginateResource::make($socialAssistances, SocialAssistanceRecipientResource::class), 200);
+            return ResponseHelper::jsonResponse(true, 'Data Bantuan Sosial Berhasil Diambil', PaginateResource::make($socialAssistances, SocialAssistanceResource::class), 200);
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }

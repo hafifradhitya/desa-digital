@@ -40,18 +40,22 @@ watch(isChildActive, () => {
             </div>
             <span
                 class="text-left leading-5 text-desa-secondary flex flex-1 group-hover:text-desa-dark-green group-[.active]:text-desa-dark-green group-[.active]:font-medium transition-setup">
-                {{ item.label  }}
+                {{ item.label }}
             </span>
         </RouterLink>
     </li>
     <template v-if="item.children">
         <div class="accordion group/accordion flex flex-col gap-1 w-full">
-            <button :data-expand="`accordion-${$item.label}`"
+            <button :data-expand="`accordion-${item.label}`"
                 class="group flex w-full shrink-0 items-center h-14 gap-2 rounded-2xl p-4 active"
                 @click="isOpen = !isOpen">
                 <div class="relative flex size-6 shrink-0">
-                    <img :src="item.iconActive" class="absolute flex size-6 shrink-0 opacity-0 group-[.active]:opacity-100 transition-setup" alt="icon" />
-                    <img :src="item.iconInactive" class="absolute flex size-6 shrink-0 opacity-100 group-[.active]:opacity-0 transition-setup" alt="icon" />
+                    <img :src="item.iconActive"
+                        class="absolute flex size-6 shrink-0 opacity-0 group-[.active]:opacity-100 transition-setup"
+                        alt="icon" />
+                    <img :src="item.iconInactive"
+                        class="absolute flex size-6 shrink-0 opacity-100 group-[.active]:opacity-0 transition-setup"
+                        alt="icon" />
                 </div>
                 <span
                     class="text-left leading-5 text-desa-secondary flex flex-1 group-[.active]:text-desa-dark-green transition-setup">
@@ -59,9 +63,9 @@ watch(isChildActive, () => {
                 </span>
                 <div class="relative flex size-6 shrink-0">
                     <img src="@/assets/images/icons/arrow-circle-dark-green-up.svg"
-                        class="absolute flex size-6 shrink-0 opacity-0 group-[.active]:opacity-100 transition-setup" alt="icon" v-if="isOpen" />
+                        class="absolute flex size-6 shrink-0 transition-setup" alt="icon" v-if="isOpen" />
                     <img src="@/assets/images/icons/arrow-circle-secondary-green-down.svg"
-                        class="absolute flex size-6 shrink-0 opacity-100 group-[.active]:opacity-0 transition-setup" alt="icon" v-else />
+                        class="absolute flex size-6 shrink-0 transition-setup" alt="icon" v-else />
                 </div>
             </button>
             <ul :id="`accordion-${item.label}`" class="flex flex-col flex-1r pl-[28px]" :class="{ hidden: !isOpen }">
