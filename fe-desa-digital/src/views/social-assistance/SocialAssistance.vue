@@ -49,7 +49,7 @@ watch(filters, () => {
         <form id="Page-Search" class="flex items-center justify-between">
             <div class="flex flex-col gap-3 w-[370px] shrink-0">
                 <label class="relative group peer w-full valid">
-                    <input type="text" placeholder="Cari nama bantuan social"
+                    <input v-model="filters.search" type="text" placeholder="Cari nama bantuan social"
                         class="appearance-none outline-none w-full h-14 rounded-2xl ring-[1.5px] ring-desa-background focus:ring-desa-black py-4 pl-12 pr-6 gap-2 font-medium placeholder:text-desa-secondary transition-all duration-300">
                     <div class="absolute transform -translate-y-1/2 top-1/2 left-4 flex size-6 shrink-0">
                         <img src="@/assets/images/icons/receipt-search-secondary-green.svg"
@@ -63,7 +63,7 @@ watch(filters, () => {
                 <div class="flex items-center gap-[10px]">
                     <span class="font-medium leading-5">Show</span>
                     <div class="relative">
-                        <select name="" id=""
+                        <select v-model="serverOptions.row_per_page" name="" id=""
                             class="appearance-none outline-none w-full h-14 rounded-2xl ring-[1.5px] ring-desa-background focus:ring-desa-black py-4 px-6 pr-[52px] gap-2 font-medium placeholder:text-desa-secondary transition-all duration-300">
                             <option value="5" selected>5 Entries</option>
                             <option value="10">10 Entries</option>
