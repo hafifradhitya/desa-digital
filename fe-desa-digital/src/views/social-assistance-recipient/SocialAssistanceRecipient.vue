@@ -8,7 +8,17 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute()
 
-const socialAssistanceRecipient = ref({})
+const socialAssistanceRecipient = ref({
+    id: null,
+    social_assistance_id: null,
+    head_of_family: null,
+    amount: null,
+    reason: null,
+    bank: null,
+    account_number: null,
+    proof: null,
+    status: null
+})
 
 const socialAssistanceRecipientStore = useSocialAssistanceRecipientStore();
 const { loading, error, success } = storeToRefs(socialAssistanceRecipientStore)
