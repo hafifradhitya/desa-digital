@@ -34,6 +34,7 @@ export const useSocialAssistanceStore = defineStore("social-assistance", {
                 this.loading = false
             }
         },
+        
         async fetchSocialAssistance(id){
             this.loading = true
 
