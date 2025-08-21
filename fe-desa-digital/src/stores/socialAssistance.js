@@ -67,6 +67,22 @@ export const useSocialAssistanceStore = defineStore("social-assistance", {
         //     }
         // },
 
+        async createSocialAssistance(payload) {
+            this.loading = true
+
+            try {
+                const response = await axiosInstance.post("/social-assistance", payload)
+
+                this.success = response.data.message
+
+                router.push({ name: 'social-assistance' })
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        },
+
         async updateSocialAssistance(payload) {
             this.loading = true
             try {
