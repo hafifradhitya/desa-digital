@@ -34,5 +34,19 @@ export const useSocialAssistanceRecipientStore = defineStore("social-assistance-
                 this.loading = false
             }
         },
+
+        async fetchSocialAssistanceRecipient(id){
+            this.loading = true
+
+            try {
+                const response = await axiosInstance.get(`/social-assistance-recipient/${id}`)
+
+                return response.data.data
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        },
     }
 })

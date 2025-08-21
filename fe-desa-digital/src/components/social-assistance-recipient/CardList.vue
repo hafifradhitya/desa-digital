@@ -1,5 +1,6 @@
 <script setup>
 import { formatRupiah, formatToClientTimezone } from '@/helpers/format';
+import { RouterLink } from 'vue-router';
 
 defineProps({
     item: {
@@ -34,7 +35,7 @@ defineProps({
         <hr class="border-desa-background" />
         <div class="flex items-center w-full">
             <div class="flex w-[100px] h-20 shrink-0 rounded-2xl overflow-hidden bg-desa-foreshadow">
-                <img src="@/assets/images/thumbnails/kk-bansos-1.png" class="w-full h-full object-cover" alt="photo" />
+                <img :src="item.social_assistance?.thumbnail" class="w-full h-full object-cover" alt="photo" />
             </div>
             <div class="flex flex-col gap-[6px] w-full ml-4 mr-9">
                 <p class="font-semibold text-lg leading-[22.5px] line-clamp-1">
@@ -92,10 +93,10 @@ defineProps({
                 </div>
             </div>
             <div class="flex items-center gap-3 justify-end w-[252px] shrink-0">
-                <a href="kd-pengajuan-bansos-manage.html"
+                <RouterLink :to="{ name: 'manage-social-assistance-recipient', params: {id: item.id} }"
                     class="flex items-center shrink-0 gap-[10px] rounded-2xl py-4 px-6 bg-desa-black">
                     <span class="font-medium text-white">Manage</span>
-                </a>
+                </RouterLink>
             </div>
         </div>
     </div>
