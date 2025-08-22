@@ -151,8 +151,7 @@ onMounted(fetchData)
                 </div>
                 <div class="flex flex-col gap-1 w-full">
                     <p class="font-semibold text-lg leading-[22.5px] text-desa-blue">
-                        {{ socialAssistanceRecipient.social_assistance?.social_assistance_recipients?.length || 0 }}
-                        Warga
+                        {{ socialAssistanceRecipient.social_assistance?.social_assistance_recipients?.length }} Warga
                     </p>
                     <span class="font-medium text-desa-secondary">
                         Total Pengajuan
