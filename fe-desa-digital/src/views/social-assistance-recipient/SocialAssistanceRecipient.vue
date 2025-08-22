@@ -17,7 +17,7 @@ const socialAssistanceRecipient = ref({
     bank: null,
     account_number: null,
     proof: null,
-    prrof_url: null,
+    proof_url: null,
     status: null
 })
 
