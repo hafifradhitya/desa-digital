@@ -18,10 +18,19 @@ class SocialAssistanceRecipientUpdateRequest extends FormRequest
             'reason' => 'required|string',
             'bank' => 'required|string|in:bri,bni,bca,mandiri',
             'account_number' => 'required',
-            'proof' => 'nullable|image',
+            'proof'                => 'nullable|image',
             'status' => 'nullable|string|in:pending,approved,rejected'
         ];
     }
+
+    protected function prepareForValidation()
+    {
+        // Kalau field proof ada tapi bukan file upload (alias kosong), set null
+        if (!$this->file('proof')) {
+            $this->merge(['proof' => null]);
+        }
+    }
+
 
     public function attributes()
     {

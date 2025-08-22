@@ -48,5 +48,36 @@ export const useSocialAssistanceRecipientStore = defineStore("social-assistance-
                 this.loading = false
             }
         },
+
+        async updateSocialAssistanceRecipient(payload) {
+            this.loading = true
+            try {
+                const formData = new FormData()
+
+                Object.keys(payload).forEach(key => {
+                if (key === "thumbnail") {
+                    if (payload.thumbnail instanceof File) {
+                    formData.append("thumbnail", payload.thumbnail)
+                    }
+                } else if (key !== "thumbnail_url") {
+                    formData.append(key, payload[key])
+                }
+                })
+
+                formData.append("_method", "PUT")
+
+                const response = await axiosInstance.post(
+                `/social-assistance-recipient/${payload.id}`,
+                formData
+                )
+
+                this.success = response.data.message
+                router.push({ name: "manage-social-assistance-recipient", params: { id: payload.id } })
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        },
     }
 })
