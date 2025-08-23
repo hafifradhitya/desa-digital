@@ -325,140 +325,153 @@ const selectDay = (day) => {
           </button>
         </div>
         <div class="flex justify-between">
-          <button v-for="day in weekDays" :key="day.date" @click="selectDay(day)"
-            class="group flex flex-col items-center w-[46px] h-[76px] shrink-0 gap-3"
-            :class="{ 'active': day.isSelected }">
-            <div
-              class="flex rounded-full size-[46px] items-center justify-center bg-desa-foreshadow group-[.active]:bg-desa-soft-green">
-              <span class="font-medium text-desa-dark-green group-[.active]:text-white">
-                {{ day.num }}
-              </span>
-            </div>
-            <span class="font-medium text-sm text-desa-secondary group-[.active]:text-desa-black">
-              {{ day.day }}
-            </span>
+    <button
+      v-for="day in weekDays"
+      :key="day.date"
+      @click="selectDay(day)"
+      class="group flex flex-col items-center w-[46px] h-[76px] shrink-0 gap-3"
+      :class="{ 'active': day.isSelected }"
+    >
+      <div
+        class="flex rounded-full size-[46px] items-center justify-center bg-desa-foreshadow group-[.active]:bg-desa-soft-green">
+        <span class="font-medium text-desa-dark-green group-[.active]:text-white">
+          {{ day.num }}
+        </span>
+      </div>
+      <span class="font-medium text-sm text-desa-secondary group-[.active]:text-desa-black">
+        {{ day.day }}
+      </span>
+    </button>
+  </div>
+      </div>
+      <div id="Events" class="flex flex-col flex-1 gap-4 p-6">
+        <div class="flex items-center justify-between">
+          <button>
+            <img src="@/assets/images/icons/arrow-left-secondary-green.svg" class="flex size-6 shrink-0" alt="icon">
+          </button>
+          <span class="font-medium text-desa-secondary">Upcoming Events (2)</span>
+          <button>
+            <img src="@/assets/images/icons/arrow-left-secondary-green.svg" class="flex size-6 shrink-0 rotate-180"
+              alt="icon">
           </button>
         </div>
-      </div>
-      <template v-if="dashboardData?.events?.length">
-        <div v-for="event in dashboardData.events" :key="event.id"
-          class="event-card relative flex w-full h-[365px] shrink-0 rounded-2xl bg-desa-background overflow-hidden">
-          <img :src="event.thumbnail" class="w-full h-full object-cover object-top" alt="thumbnails">
+        <div class="event-card relative flex w-full h-[365px] shrink-0 rounded-2xl bg-desa-background overflow-hidden">
+          <img src="@/assets/images/thumbnails/event-image-1.png" class="w-full h-full object-cover object-top"
+            alt="thumbnails">
           <div
             class="absolute inset-3 top-auto text-white flex flex-col rounded-[18px] border border-white/20 p-4 gap-[6px] backdrop-blur-xl bg-white/[2%]">
-            <p class="font-semibold text-xl leading-[25px]">{{ event.name }}</p>
+            <p class="font-semibold text-xl leading-[25px]">Belajar Coding Bersama</p>
             <div class="flex items-center gap-1">
               <img src="@/assets/images/icons/clock-white.svg" class="flex size-[18px] shrink-0" alt="icon">
-              <p class="font-medium">{{ event.time }}</p>
+              <p class="font-medium">11:30 WIB</p>
             </div>
           </div>
         </div>
-      </template>
-
-      <template v-else>
-        <div class="event-empty-state m-auto h-[384px] flex flex-col shrink-0 justify-center items-center gap-6">
+        <div class="event-empty-state hidden m-auto h-[384px] flex flex-col shrink-0 justify-center items-center gap-6">
           <img src="@/assets/images/icons/calendar-remove-secondary-green.svg" class="flex size-[52px] shrink-0"
             alt="icon">
           <p class="font-medium leading-5 text-center text-desa-secondary">Ups, nampaknya belum ada event</p>
         </div>
-      </template>
-
+      </div>
     </section>
   </div>
   <div id="Row-3" class="flex gap-[14px]">
     <section id="Total-Applicants" class="flex flex-col gap-[14px] w-[calc(603/1000*100%)]">
-      <div class="flex flex-col flex-1 shrink-0 rounded-2xl bg-white">
-        <!-- Header -->
-        <div class="flex flex-col gap-3 p-6">
-          <div class="flex items-center justify-between">
-            <p class="font-medium text-desa-secondary">Total Applicants</p>
-            <img src="@/assets/images/icons/document-text-foreshadow-background.svg" class="flex size-12 shrink-0"
-              alt="icon">
-          </div>
-          <div class="flex flex-col gap-[6px]">
-            <p class="font-semibold text-[32px] leading-10">
-              {{ dashboardData.total_applicants }}
-            </p>
-            <div class="flex items-center gap-0.5">
-              <img src="@/assets/images/icons/trend-up-dark-green-fill.svg" class="flex size-[18px] shrink-0"
-                alt="icon">
-              <p class="font-medium text-sm text-desa-secondary">
-                <span class="text-desa-dark-green">+12%</span>
-                dari bulan sebelumnya
-              </p>
-            </div>
-          </div>
+  <div class="flex flex-col flex-1 shrink-0 rounded-2xl bg-white">
+    <!-- Header -->
+    <div class="flex flex-col gap-3 p-6">
+      <div class="flex items-center justify-between">
+        <p class="font-medium text-desa-secondary">Total Applicants</p>
+        <img src="@/assets/images/icons/document-text-foreshadow-background.svg"
+             class="flex size-12 shrink-0" alt="icon">
+      </div>
+      <div class="flex flex-col gap-[6px]">
+        <p class="font-semibold text-[32px] leading-10">
+          {{ dashboardData.total_applicants }}
+        </p>
+        <div class="flex items-center gap-0.5">
+          <img src="@/assets/images/icons/trend-up-dark-green-fill.svg"
+               class="flex size-[18px] shrink-0" alt="icon">
+          <p class="font-medium text-sm text-desa-secondary">
+            <span class="text-desa-dark-green">+12%</span>
+            dari bulan sebelumnya
+          </p>
         </div>
+      </div>
+    </div>
 
-        <hr class="border-desa-foreshadow">
+    <hr class="border-desa-foreshadow">
 
-        <!-- Latest Applicants -->
-        <div class="flex flex-col gap-4 p-6">
-          <p class="font-semibold text-[20px] leading-[25px] text-left w-full">Applicant Terakhir</p>
+    <!-- Latest Applicants -->
+    <div class="flex flex-col gap-4 p-6">
+      <p class="font-semibold text-[20px] leading-[25px] text-left w-full">Applicant Terakhir</p>
 
-          <!-- Loop Applicants -->
-          <template v-if="dashboardData.latest_applicants && dashboardData.latest_applicants.length">
-            <div v-for="applicant in dashboardData.latest_applicants" :key="applicant.id">
-              <div class="card flex items-center w-full gap-3">
-                <!-- Thumbnail Development -->
-                <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow overflow-hidden">
-                  <img :src="applicant.development.thumbnail_url ?? '/assets/images/thumbnails/default.png'"
-                    class="w-full h-full object-cover" alt="thumbnail">
+      <!-- Loop Applicants -->
+      <template v-if="dashboardData.latest_applicants && dashboardData.latest_applicants.length">
+        <div v-for="applicant in dashboardData.latest_applicants" :key="applicant.id">
+          <div class="card flex items-center w-full gap-3">
+            <!-- Thumbnail Development -->
+            <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow overflow-hidden">
+              <img :src="applicant.development.thumbnail_url ?? '/assets/images/thumbnails/default.png'"
+                   class="w-full h-full object-cover" alt="thumbnail">
+            </div>
+
+            <!-- Applicant Info -->
+            <div class="flex flex-col gap-[6px] w-full">
+              <div class="flex items-center gap-[6px]">
+                <div class="flex size-8 rounded-full overflow-hidden bg-desa-foreshadow">
+                  <img :src="applicant.user.profile_picture_url ?? '/assets/images/photos/default.png'"
+                       class="w-full h-full object-cover" alt="foto user">
                 </div>
-
-                <!-- Applicant Info -->
-                <div class="flex flex-col gap-[6px] w-full">
-                  <div class="flex items-center gap-[6px]">
-                    <div class="flex size-8 rounded-full overflow-hidden bg-desa-foreshadow">
-                      <img :src="applicant.user.profile_picture_url ?? '/assets/images/photos/default.png'"
-                        class="w-full h-full object-cover" alt="foto user">
-                    </div>
-                    <p class="font-medium text-xl leading-[22.5px] line-clamp-1">
-                      {{ applicant.user.name }}
-                    </p>
-                  </div>
-                  <span class="font-medium text-desa-secondary line-clamp-1">
-                    {{ applicant.development.name }}
-                  </span>
-                </div>
-
-                <!-- Status Badge -->
-                <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0" :class="{
-                  'bg-desa-yellow': applicant.status === 'pending',
-                  'bg-desa-dark-green': applicant.status === 'approved',
-                  'bg-desa-orange': applicant.status === 'rejected'
-                }">
-                  <span class="font-semibold text-xs text-white uppercase">
-                    {{ applicant.status }}
-                  </span>
-                </div>
+                <p class="font-medium text-xl leading-[22.5px] line-clamp-1">
+                  {{ applicant.user.name }}
+                </p>
               </div>
-              <hr class="border-desa-foreshadow last-of-type:hidden">
+              <span class="font-medium text-desa-secondary line-clamp-1">
+                {{ applicant.development.name }}
+              </span>
             </div>
-          </template>
 
-          <!-- Kalau kosong -->
-          <div v-else class="m-auto h-[280px] flex flex-col shrink-0 justify-center items-center gap-6">
-            <img src="@/assets/images/icons/note-remove-secondary.svg" class="flex size-[52px] shrink-0" alt="icon">
-            <p class="font-medium leading-5 text-center text-desa-secondary">
-              Ups, nampaknya belum ada Applicant
-            </p>
+            <!-- Status Badge -->
+            <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0"
+                 :class="{
+                   'bg-desa-yellow': applicant.status === 'pending',
+                   'bg-desa-dark-green': applicant.status === 'approved',
+                   'bg-desa-orange': applicant.status === 'rejected'
+                 }">
+              <span class="font-semibold text-xs text-white uppercase">
+                {{ applicant.status }}
+              </span>
+            </div>
           </div>
+          <hr class="border-desa-foreshadow last-of-type:hidden">
         </div>
-      </div>
+      </template>
 
-      <!-- Footer Download -->
-      <div class="flex items-center justify-between h-[125px] rounded-2xl p-8 gap-4 gradient-horizontal">
-        <div class="flex flex-col gap-[6px]">
-          <p class="font-medium text-sm text-desa-lime">— Unduh Data Desa</p>
-          <p class="font-semibold text-2xl text-white text-nowrap">Data Desa Terkini</p>
-        </div>
-        <a href="#" class="flex items-center flex-nowrap rounded-2xl p-4 gap-[10px] bg-white">
-          <span class="font-medium text-desa-dark-green">Download Laporan</span>
-          <img src="@/assets/images/icons/receive-square-dark-green.svg" class="flex size-6 shrink-0" alt="icon">
-        </a>
+      <!-- Kalau kosong -->
+      <div v-else class="m-auto h-[280px] flex flex-col shrink-0 justify-center items-center gap-6">
+        <img src="@/assets/images/icons/note-remove-secondary.svg"
+             class="flex size-[52px] shrink-0" alt="icon">
+        <p class="font-medium leading-5 text-center text-desa-secondary">
+          Ups, nampaknya belum ada Applicant
+        </p>
       </div>
-    </section>
+    </div>
+  </div>
+
+  <!-- Footer Download -->
+  <div class="flex items-center justify-between h-[125px] rounded-2xl p-8 gap-4 gradient-horizontal">
+    <div class="flex flex-col gap-[6px]">
+      <p class="font-medium text-sm text-desa-lime">— Unduh Data Desa</p>
+      <p class="font-semibold text-2xl text-white text-nowrap">Data Desa Terkini</p>
+    </div>
+    <a href="#" class="flex items-center flex-nowrap rounded-2xl p-4 gap-[10px] bg-white">
+      <span class="font-medium text-desa-dark-green">Download Laporan</span>
+      <img src="@/assets/images/icons/receive-square-dark-green.svg"
+           class="flex size-6 shrink-0" alt="icon">
+    </a>
+  </div>
+</section>
 
     <section id="statistik-Penduduk" class="flex flex-col flex-1 shrink-0 gap-4 p-6 rounded-2xl bg-white">
       <div class="flex items-center justify-between">
