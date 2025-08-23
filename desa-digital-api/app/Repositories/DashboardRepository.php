@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Interfaces\DashboardRepositoryInterface;
 use App\Models\Development;
+use App\Models\DevelopmentApplicant;
 use App\Models\Event;
 use App\Models\FamilyMember;
 use App\Models\HeadOfFamily;
@@ -13,8 +14,18 @@ use Carbon\Carbon;
 
 class DashboardRepository implements DashboardRepositoryInterface
 {
+
     public function getDashboardData()
     {
+
+        $today = Carbon::today();
+
+        $upcomingEvents = Event::whereDate('date', '>=', $today)
+            ->orderBy('date', 'asc')
+            ->orderBy('time', 'asc')
+            ->take(5)
+            ->get();
+
         // total penduduk = jumlah kepala keluarga + anggota keluarga
         $totalResidents = HeadOfFamily::count() + FamilyMember::count();
 
@@ -38,7 +49,17 @@ class DashboardRepository implements DashboardRepositoryInterface
         $toddlerTo   = $today->toDateString();
         $toddler = FamilyMember::whereBetween('date_of_birth', [$toddlerFrom, $toddlerTo])->count();
 
+        // ambil social assistance terakhir
         $latestSocialAssistances = SocialAssistanceRecipient::with(['socialAssistance', 'headOfFamily.user'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // ✅ ambil total applicant
+        $totalApplicants = DevelopmentApplicant::count();
+
+        // ✅ ambil applicant terakhir (misal 5 terakhir)
+        $latestApplicants = DevelopmentApplicant::with(['development', 'user'])
             ->latest()
             ->take(5)
             ->get();
@@ -56,6 +77,14 @@ class DashboardRepository implements DashboardRepositoryInterface
                 'toddler' => $toddler,
             ],
             'latest_social_assistances' => $latestSocialAssistances,
+
+            // 🔽 tambahan ini
+            'total_applicants' => $totalApplicants,
+            'latest_applicants' => $latestApplicants,
+
+            //  tambahan ini
+            'upcoming_events' => $upcomingEvents,
+            'today' => $today->toDateString(),
         ];
     }
 }

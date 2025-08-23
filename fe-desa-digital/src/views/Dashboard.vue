@@ -1,8 +1,12 @@
 <script setup>
 import { useDashboardStore } from '@/stores/dashboard';
 import { storeToRefs } from 'pinia';
-import { onMounted, watch } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { Chart } from 'chart.js/auto';
+
+import { ref } from 'vue'
+import { format, addDays, startOfWeek, isToday, subWeeks, addWeeks, subDays } from 'date-fns'
+import { id } from 'date-fns/locale'
 
 const dashboardStore = useDashboardStore();
 const { dashboardData, loading } = storeToRefs(dashboardStore);
@@ -121,6 +125,44 @@ function translateStatus(status) {
 //   // jika path local dari storage Laravel
 //   return `/storage/${path}`;
 // }
+
+const today = new Date()
+
+// hari yang sedang jadi patokan
+const selectedDay = ref(today)
+
+const currentWeekStart = ref(startOfWeek(today, { weekStartsOn: 1 }))
+
+// generate range 7 hari, dimulai dari currentDay
+const weekDays = computed(() =>
+  Array.from({ length: 7 }, (_, i) => {
+    const d = addDays(currentWeekStart.value, i)
+    return {
+      date: d,
+      day: format(d, 'EEE', { locale: id }), // Sen, Sel, Rab
+      num: format(d, 'd'),                   // 23, 24, ...
+      isToday: d.toDateString() === today.toDateString(),
+      isSelected: d.toDateString() === selectedDay.value.toDateString()
+    }
+  })
+)
+
+// judul bulan (ambil dari currentDay)
+const monthTitle = computed(() =>
+  format(currentWeekStart.value, 'MMMM yyyy', { locale: id })
+)
+
+// navigasi geser 1 hari
+const prevWeek = () => {
+  currentWeekStart.value = subDays(currentWeekStart.value, 1)
+}
+const nextWeek = () => {
+  currentWeekStart.value = addDays(currentWeekStart.value, 1)
+}
+
+const selectDay = (day) => {
+  selectedDay.value = day.date
+}
 </script>
 
 <template>
@@ -269,131 +311,64 @@ function translateStatus(status) {
     <section id="Event" class="flex flex-col flex-1 shrink-0 rounded-2xl bg-white">
       <div id="Date-Picker" class="flex flex-col gap-4 p-6">
         <div class="flex items-center justify-between">
-          <button
+          <button @click="prevWeek"
             class="flex items-center justify-center size-14 rounded-2xl border border-desa-foreshadow hover:border-desa-dark-green">
             <img src="@/assets/images/icons/arrow-left-secondary-green.svg" class="flex size-6 shrink-0" alt="icon">
           </button>
-          <p class="font-semibold text-xl">December 2024</p>
-          <button
+          <p class="font-semibold text-xl">
+            {{ monthTitle }}
+          </p>
+          <button @click="nextWeek"
             class="flex items-center justify-center size-14 rounded-2xl border border-desa-foreshadow hover:border-desa-dark-green">
             <img src="@/assets/images/icons/arrow-left-secondary-green.svg" class="flex size-6 shrink-0 rotate-180"
               alt="icon">
           </button>
         </div>
         <div class="flex justify-between">
-          <button class="group flex flex-col items-center w-[46px] h-[76px] shrink-0 gap-3">
+          <button v-for="day in weekDays" :key="day.date" @click="selectDay(day)"
+            class="group flex flex-col items-center w-[46px] h-[76px] shrink-0 gap-3"
+            :class="{ 'active': day.isSelected }">
             <div
               class="flex rounded-full size-[46px] items-center justify-center bg-desa-foreshadow group-[.active]:bg-desa-soft-green">
               <span class="font-medium text-desa-dark-green group-[.active]:text-white">
-                28
+                {{ day.num }}
               </span>
             </div>
             <span class="font-medium text-sm text-desa-secondary group-[.active]:text-desa-black">
-              Sen
-            </span>
-          </button>
-          <button class="group flex flex-col items-center w-[46px] h-[76px] shrink-0 gap-3">
-            <div
-              class="flex rounded-full size-[46px] items-center justify-center bg-desa-foreshadow group-[.active]:bg-desa-soft-green">
-              <span class="font-medium text-desa-dark-green group-[.active]:text-white">
-                29
-              </span>
-            </div>
-            <span class="font-medium text-sm text-desa-secondary group-[.active]:text-desa-black">
-              Sel
-            </span>
-          </button>
-          <button class="group flex flex-col items-center w-[46px] h-[76px] shrink-0 gap-3">
-            <div
-              class="flex rounded-full size-[46px] items-center justify-center bg-desa-foreshadow group-[.active]:bg-desa-soft-green">
-              <span class="font-medium text-desa-dark-green group-[.active]:text-white">
-                30
-              </span>
-            </div>
-            <span class="font-medium text-sm text-desa-secondary group-[.active]:text-desa-black">
-              Rab
-            </span>
-          </button>
-          <button class="group flex flex-col items-center w-[46px] h-[76px] shrink-0 gap-3 active">
-            <div
-              class="flex rounded-full size-[46px] items-center justify-center bg-desa-foreshadow group-[.active]:bg-desa-soft-green">
-              <span class="font-medium text-desa-dark-green group-[.active]:text-white">
-                31
-              </span>
-            </div>
-            <span class="font-medium text-sm text-desa-secondary group-[.active]:text-desa-black">
-              Kam
-            </span>
-          </button>
-          <button class="group flex flex-col items-center w-[46px] h-[76px] shrink-0 gap-3">
-            <div
-              class="flex rounded-full size-[46px] items-center justify-center bg-desa-foreshadow group-[.active]:bg-desa-soft-green">
-              <span class="font-medium text-desa-dark-green group-[.active]:text-white">
-                1
-              </span>
-            </div>
-            <span class="font-medium text-sm text-desa-secondary group-[.active]:text-desa-black">
-              Jum
-            </span>
-          </button>
-          <button class="group flex flex-col items-center w-[46px] h-[76px] shrink-0 gap-3">
-            <div
-              class="flex rounded-full size-[46px] items-center justify-center bg-desa-foreshadow group-[.active]:bg-desa-soft-green">
-              <span class="font-medium text-desa-dark-green group-[.active]:text-white">
-                2
-              </span>
-            </div>
-            <span class="font-medium text-sm text-desa-secondary group-[.active]:text-desa-black">
-              Sab
-            </span>
-          </button>
-          <button class="group flex flex-col items-center w-[46px] h-[76px] shrink-0 gap-3">
-            <div
-              class="flex rounded-full size-[46px] items-center justify-center bg-desa-foreshadow group-[.active]:bg-desa-soft-green">
-              <span class="font-medium text-desa-dark-green group-[.active]:text-white">
-                3
-              </span>
-            </div>
-            <span class="font-medium text-sm text-desa-secondary group-[.active]:text-desa-black">
-              Min
+              {{ day.day }}
             </span>
           </button>
         </div>
       </div>
-      <div id="Events" class="flex flex-col flex-1 gap-4 p-6">
-        <div class="flex items-center justify-between">
-          <button>
-            <img src="@/assets/images/icons/arrow-left-secondary-green.svg" class="flex size-6 shrink-0" alt="icon">
-          </button>
-          <span class="font-medium text-desa-secondary">Upcoming Events (2)</span>
-          <button>
-            <img src="@/assets/images/icons/arrow-left-secondary-green.svg" class="flex size-6 shrink-0 rotate-180"
-              alt="icon">
-          </button>
-        </div>
-        <div class="event-card relative flex w-full h-[365px] shrink-0 rounded-2xl bg-desa-background overflow-hidden">
-          <img src="@/assets/images/thumbnails/event-image-1.png" class="w-full h-full object-cover object-top"
-            alt="thumbnails">
+      <template v-if="dashboardData?.events?.length">
+        <div v-for="event in dashboardData.events" :key="event.id"
+          class="event-card relative flex w-full h-[365px] shrink-0 rounded-2xl bg-desa-background overflow-hidden">
+          <img :src="event.thumbnail" class="w-full h-full object-cover object-top" alt="thumbnails">
           <div
             class="absolute inset-3 top-auto text-white flex flex-col rounded-[18px] border border-white/20 p-4 gap-[6px] backdrop-blur-xl bg-white/[2%]">
-            <p class="font-semibold text-xl leading-[25px]">Belajar Coding Bersama</p>
+            <p class="font-semibold text-xl leading-[25px]">{{ event.name }}</p>
             <div class="flex items-center gap-1">
               <img src="@/assets/images/icons/clock-white.svg" class="flex size-[18px] shrink-0" alt="icon">
-              <p class="font-medium">11:30 WIB</p>
+              <p class="font-medium">{{ event.time }}</p>
             </div>
           </div>
         </div>
-        <div class="event-empty-state hidden m-auto h-[384px] flex flex-col shrink-0 justify-center items-center gap-6">
+      </template>
+
+      <template v-else>
+        <div class="event-empty-state m-auto h-[384px] flex flex-col shrink-0 justify-center items-center gap-6">
           <img src="@/assets/images/icons/calendar-remove-secondary-green.svg" class="flex size-[52px] shrink-0"
             alt="icon">
           <p class="font-medium leading-5 text-center text-desa-secondary">Ups, nampaknya belum ada event</p>
         </div>
-      </div>
+      </template>
+
     </section>
   </div>
   <div id="Row-3" class="flex gap-[14px]">
-    <section id="Total-Aplicants" class="flex flex-col gap-[14px] w-[calc(603/1000*100%)]">
-      <div class="flex flex-col  flex-1 shrink-0 rounded-2xl bg-white">
+    <section id="Total-Applicants" class="flex flex-col gap-[14px] w-[calc(603/1000*100%)]">
+      <div class="flex flex-col flex-1 shrink-0 rounded-2xl bg-white">
+        <!-- Header -->
         <div class="flex flex-col gap-3 p-6">
           <div class="flex items-center justify-between">
             <p class="font-medium text-desa-secondary">Total Applicants</p>
@@ -401,7 +376,9 @@ function translateStatus(status) {
               alt="icon">
           </div>
           <div class="flex flex-col gap-[6px]">
-            <p class="font-semibold text-[32px] leading-10">20</p>
+            <p class="font-semibold text-[32px] leading-10">
+              {{ dashboardData.total_applicants }}
+            </p>
             <div class="flex items-center gap-0.5">
               <img src="@/assets/images/icons/trend-up-dark-green-fill.svg" class="flex size-[18px] shrink-0"
                 alt="icon">
@@ -412,75 +389,65 @@ function translateStatus(status) {
             </div>
           </div>
         </div>
+
         <hr class="border-desa-foreshadow">
+
+        <!-- Latest Applicants -->
         <div class="flex flex-col gap-4 p-6">
           <p class="font-semibold text-[20px] leading-[25px] text-left w-full">Applicant Terakhir</p>
-          <div class="card flex items-center w-full gap-3">
-            <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow overflow-hidden">
-              <img src="@/assets/images/thumbnails/kd-applicant-1.png" class="w-full h-full object-cover" alt="icon">
-            </div>
-            <div class="flex flex-col gap-[6px] w-full">
-              <div class="flex items-center gap-[6px]">
-                <div class="flex size-8 rounded-full overflow-hidden bg-desa-foreshadow">
-                  <img src="@/assets/images/photos/kk-photo-1.png" class="w-full h-full object-cover" alt="icon">
+
+          <!-- Loop Applicants -->
+          <template v-if="dashboardData.latest_applicants && dashboardData.latest_applicants.length">
+            <div v-for="applicant in dashboardData.latest_applicants" :key="applicant.id">
+              <div class="card flex items-center w-full gap-3">
+                <!-- Thumbnail Development -->
+                <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow overflow-hidden">
+                  <img :src="applicant.development.thumbnail_url ?? '/assets/images/thumbnails/default.png'"
+                    class="w-full h-full object-cover" alt="thumbnail">
                 </div>
-                <p class="font-medium text-xl leading-[22.5px] line-clamp-1">Masayoshi</p>
-              </div>
-              <span class="font-medium text-desa-secondary line-clamp-1">
-                Melamar pembangunan Jalanan Utama Desa
-              </span>
-            </div>
-            <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-yellow">
-              <span class="font-semibold text-xs text-white uppercase">Menunggu</span>
-            </div>
-          </div>
-          <hr class="border-desa-foreshadow last-of-type:hidden">
-          <div class="card flex items-center w-full gap-3">
-            <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow overflow-hidden">
-              <img src="@/assets/images/thumbnails/kd-applicant-2.png" class="w-full h-full object-cover" alt="icon">
-            </div>
-            <div class="flex flex-col gap-[6px] w-full">
-              <div class="flex items-center gap-[6px]">
-                <div class="flex size-8 rounded-full overflow-hidden bg-desa-foreshadow">
-                  <img src="@/assets/images/photos/kk-photo-2.png" class="w-full h-full object-cover" alt="icon">
+
+                <!-- Applicant Info -->
+                <div class="flex flex-col gap-[6px] w-full">
+                  <div class="flex items-center gap-[6px]">
+                    <div class="flex size-8 rounded-full overflow-hidden bg-desa-foreshadow">
+                      <img :src="applicant.user.profile_picture_url ?? '/assets/images/photos/default.png'"
+                        class="w-full h-full object-cover" alt="foto user">
+                    </div>
+                    <p class="font-medium text-xl leading-[22.5px] line-clamp-1">
+                      {{ applicant.user.name }}
+                    </p>
+                  </div>
+                  <span class="font-medium text-desa-secondary line-clamp-1">
+                    {{ applicant.development.name }}
+                  </span>
                 </div>
-                <p class="font-medium text-xl leading-[22.5px] line-clamp-1">Surti Jasmine</p>
-              </div>
-              <span class="font-medium text-desa-secondary line-clamp-1">
-                Melamar pembangunan Balai Desa
-              </span>
-            </div>
-            <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-dark-green">
-              <span class="font-semibold text-xs text-white uppercase">Diterima</span>
-            </div>
-          </div>
-          <hr class="border-desa-foreshadow last-of-type:hidden">
-          <div class="card flex items-center w-full gap-3">
-            <div class="flex size-[72px] shrink-0 rounded-2xl bg-desa-foreshadow overflow-hidden">
-              <img src="@/assets/images/thumbnails/kd-applicant-3.png" class="w-full h-full object-cover" alt="icon">
-            </div>
-            <div class="flex flex-col gap-[6px] w-full">
-              <div class="flex items-center gap-[6px]">
-                <div class="flex size-8 rounded-full overflow-hidden bg-desa-foreshadow">
-                  <img src="@/assets/images/photos/kk-photo-3.png" class="w-full h-full object-cover" alt="icon">
+
+                <!-- Status Badge -->
+                <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0" :class="{
+                  'bg-desa-yellow': applicant.status === 'pending',
+                  'bg-desa-dark-green': applicant.status === 'approved',
+                  'bg-desa-orange': applicant.status === 'rejected'
+                }">
+                  <span class="font-semibold text-xs text-white uppercase">
+                    {{ applicant.status }}
+                  </span>
                 </div>
-                <p class="font-medium text-xl leading-[22.5px] line-clamp-1">Mirna Wonongso</p>
               </div>
-              <span class="font-medium text-desa-secondary line-clamp-1">
-                Melamar pembangunan Puskemas Desa
-              </span>
+              <hr class="border-desa-foreshadow last-of-type:hidden">
             </div>
-            <div class="badge rounded-full p-3 gap-2 flex w-[100px] justify-center shrink-0 bg-desa-orange">
-              <span class="font-semibold text-xs text-white uppercase">Ditolak</span>
-            </div>
-          </div>
-          <hr class="border-desa-foreshadow last-of-type:hidden">
-          <div class="hidden m-auto h-[280px] flex flex-col shrink-0 justify-center items-center gap-6">
+          </template>
+
+          <!-- Kalau kosong -->
+          <div v-else class="m-auto h-[280px] flex flex-col shrink-0 justify-center items-center gap-6">
             <img src="@/assets/images/icons/note-remove-secondary.svg" class="flex size-[52px] shrink-0" alt="icon">
-            <p class="font-medium leading-5 text-center text-desa-secondary">Ups, nampaknya belum ada Applicant</p>
+            <p class="font-medium leading-5 text-center text-desa-secondary">
+              Ups, nampaknya belum ada Applicant
+            </p>
           </div>
         </div>
       </div>
+
+      <!-- Footer Download -->
       <div class="flex items-center justify-between h-[125px] rounded-2xl p-8 gap-4 gradient-horizontal">
         <div class="flex flex-col gap-[6px]">
           <p class="font-medium text-sm text-desa-lime">— Unduh Data Desa</p>
@@ -492,6 +459,7 @@ function translateStatus(status) {
         </a>
       </div>
     </section>
+
     <section id="statistik-Penduduk" class="flex flex-col flex-1 shrink-0 gap-4 p-6 rounded-2xl bg-white">
       <div class="flex items-center justify-between">
         <p class="font-medium text-desa-secondary">Statistics Penduduk</p>
