@@ -14,7 +14,6 @@ import SocialAssistanceCreate from '@/views/social-assistance/SocialAssistanceCr
 import SocialAssistanceRecipients from '@/views/social-assistance-recipient/SocialAssistanceRecipients.vue'
 import SocialAssistanceRecipient from '@/views/social-assistance-recipient/SocialAssistanceRecipient.vue'
 import Developments from '@/views/development/Developments.vue'
-import Developments from '@/views/development/Developments.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -84,10 +83,10 @@ const router = createRouter({
           meta: { requiresAuth: true, permission: 'social-assistance-recipient-list' }
         },  
         {
-          path: 'developement',
-          name: 'developement',
+          path: 'development',
+          name: 'development',
           component: Developments,
-          meta: { requiresAuth: true, permission: 'developement-list' }
+          meta: { requiresAuth: true, permission: 'development-list' }
         },
       ]
     },

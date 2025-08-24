@@ -18,7 +18,7 @@ class DevelopmentRepository implements DevelopmentRepositoryInterface
             if ($search) {
                 $query->search($search);
             }
-        });
+        })->with('developmentApplicants');
 
         $query->orderBy('created_at', 'desc');
 

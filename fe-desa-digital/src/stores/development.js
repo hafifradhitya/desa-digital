@@ -3,7 +3,7 @@ import { axiosInstance } from "@/plugins/axios";
 import router from "@/router";
 import { defineStore } from "pinia";
 
-export const useDevelopementStore = defineStore("development", {
+export const useDevelopmentStore = defineStore("development", {
     state: () => ({
         developments: [],
         meta: {
