@@ -35,6 +35,18 @@ const sidebarItem = [
                 path: '/social-assistance-recipient'
             }
         ]
+    },
+    {
+        label: 'Jadwal Desa',
+        path: '',
+        iconActive: iconBagActive,
+        iconInactive: iconBagInactive,
+        children: [
+            {
+                label: 'Pembangunan',
+                path: '/development'
+            },
+        ]
     }
 ];
 </script>
