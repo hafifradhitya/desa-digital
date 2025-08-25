@@ -49,7 +49,9 @@ class DevelopmentRepository implements DevelopmentRepositoryInterface
     public function getById(
         string $id
     ) {
-        $query = Development::where('id', $id);
+        $query = Development::where('id', $id)->with([
+            'developmentApplicants.user',
+        ]);
 
         return $query->first();
     }

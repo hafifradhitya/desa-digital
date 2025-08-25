@@ -32,5 +32,33 @@ export const useDevelopmentStore = defineStore("development", {
                 this.loading = false
             }
         },
+
+        async fetchDevelopment(id){
+            this.loading = true
+
+            try {
+                const response = await axiosInstance.get(`/development/${id}`)
+
+                return response.data.data
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async deleteDevelopment(id){
+            this.loading = true
+
+            try {
+                const response = await axiosInstance.delete(`/development/${id}`)
+
+                this.success = response.data.message
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        }
     }
 })
