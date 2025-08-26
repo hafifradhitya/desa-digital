@@ -47,6 +47,56 @@ export const useDevelopmentStore = defineStore("development", {
             }
         },
 
+        async updateDevelopment(payload) {
+            this.loading = true
+
+            try {
+                const response = await axiosInstance.post(`/development/${payload.id}`, {
+                    ...payload,
+                    _method: 'PUT'
+                })
+
+                this.success = response.data.message
+
+                router.push({ name: 'manage-development', params: { id: payload.id } })
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        },
+
+        // async updateDevelopment(payload) {
+        //     this.loading = true
+        //     try {
+        //         const formData = new FormData()
+
+        //         Object.keys(payload).forEach(key => {
+        //         if (key === "thumbnail") {
+        //             if (payload.thumbnail instanceof File) {
+        //             formData.append("thumbnail", payload.thumbnail)
+        //             }
+        //         } else if (key !== "thumbnail_url") {
+        //             formData.append(key, payload[key])
+        //         }
+        //         })
+
+        //         formData.append("_method", "PUT")
+
+        //         const response = await axiosInstance.post(
+        //         `/development/${payload.id}`,
+        //         formData
+        //         )
+
+        //         this.success = response.data.message
+        //         router.push({ name: "manage-development", params: { id: payload.id } })
+        //     } catch (error) {
+        //         this.error = handleError(error)
+        //     } finally {
+        //         this.loading = false
+        //     }
+        // },
+
         async deleteDevelopment(id){
             this.loading = true
 

@@ -63,7 +63,7 @@ class DevelopmentRepository implements DevelopmentRepositoryInterface
 
         try {
             $development = new Development();
-            $development->thumbnail = $data['thumbnail']->store('assets/dvelopments'. 'public');
+            $development->thumbnail = $data['thumbnail']->store('assets/developments', 'public');
             $development->name = $data['name'];
             $development->description = $data['description'];
             $development->person_in_charge = $data['person_in_charge'];
@@ -93,7 +93,7 @@ class DevelopmentRepository implements DevelopmentRepositoryInterface
             $development = Development::find($id);
 
             if(isset($data['thumbnail'])) {
-                $development->thumbnail = $data['thumbnail']->store('assets/developments'. 'public');
+                $development->thumbnail = $data['thumbnail']->store('assets/developments', 'public');
             }
 
             $development->name = $data['name'];
