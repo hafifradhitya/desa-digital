@@ -46,5 +46,29 @@ export const useEventStore = defineStore("event", {
                 this.loading = false
             }
         },
+
+        async updateEvent(payload) {
+          this.loading = true
+          try {
+            const formData = new FormData()
+            Object.keys(payload).forEach(key => {
+              if (payload[key] !== null && payload[key] !== undefined) {
+                formData.append(key, payload[key])
+              }
+            })
+            formData.append('_method', 'PUT')
+
+            const response = await axiosInstance.post(`/event/${payload.id}`, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            })
+
+            this.success = response.data.message
+            router.push({ name: 'manage-event', params: { id: payload.id } })
+          } catch (error) {
+            this.error = handleError(error)
+          } finally {
+            this.loading = false
+          }
+        }
     }
 })

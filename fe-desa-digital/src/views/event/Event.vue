@@ -3,7 +3,7 @@ import { formatRupiah, formatToClientTimezone } from '@/helpers/format';
 import { useEventStore } from '@/stores/event';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 
 const route = useRoute()
 
@@ -33,11 +33,31 @@ onMounted(fetchData)
             </div>
             <h1 class="font-semibold text-2xl">Detail Event Desa</h1>
         </div>
-        <a href="kd-event-desa-edit.html" class="flex items-center rounded-2xl py-4 px-6 gap-[10px] bg-desa-black">
+        <RouterLink :to="{ name: 'edit-event', params: { id: event.id } }"
+            class="flex items-center rounded-2xl py-4 px-6 gap-[10px] bg-desa-black">
             <p class="font-medium text-white">Ubah Data</p>
             <img src="@/assets/images/icons/edit-white.svg" class="flex size-6 shrink-0" alt="icon">
-        </a>
+        </RouterLink>
     </div>
+
+    <div v-if="success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-2xl relative mb-4"
+        role="alert">
+        <span class="block sm:inline">{{ success }}</span>
+
+        <button type="button" @click="success = null" class="absolute top-1/2 -translate-y-1/2 right-4">
+            <img src="@/assets/images/icons/close-circle-white.svg" class="flex size-6 shrink-0" alt="icon">
+        </button>
+    </div>
+
+    <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-2xl relative mb-4"
+        role="alert">
+        <span class="block sm:inline">{{ error }}</span>
+
+        <button type="button" @click="error = null" class="absolute top-1/2 -translate-y-1/2 right-4">
+            <img src="@/assets/images/icons/close-circle-white.svg" class="flex size-6 shrink-0" alt="icon">
+        </button>
+    </div>
+
     <div class="flex gap-[14px]">
         <section id="Informasi"
             class="flex flex-col shrink-0 w-[calc(525/1000*100%)] h-fit rounded-3xl p-6 gap-6 bg-white">
@@ -83,7 +103,7 @@ onMounted(fetchData)
                 </div>
                 <div class="flex flex-col gap-1 w-full">
                     <p class="font-semibold text-lg leading-[22.5px] text-desa-blue">{{ event.event_participants?.length
-                        }} Warga</p>
+                    }} Warga</p>
                     <span class="font-medium text-desa-secondary">
                         Total Partisipasi
                     </span>
@@ -131,11 +151,13 @@ onMounted(fetchData)
                                 alt="icon">
                         </div>
                         <div class="flex flex-col gap-1">
-                            <p class="font-semibold text-lg leading-5 text-desa-black">{{ participant.head_of_family?.user?.name }}</p>
+                            <p class="font-semibold text-lg leading-5 text-desa-black">{{
+                                participant.head_of_family?.user?.name }}</p>
                             <p class="flex items-center gap-1">
                                 <img src="@/assets/images/icons/briefcase-secondary-green.svg"
                                     class="flex size-[18px] shrink-0" alt="icon">
-                                <span class="font-medium text-sm text-desa-secondary">{{ participant.head_of_family?.occupation }}</span>
+                                <span class="font-medium text-sm text-desa-secondary">{{
+                                    participant.head_of_family?.occupation }}</span>
                             </p>
                         </div>
                     </div>

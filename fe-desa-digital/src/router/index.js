@@ -19,6 +19,7 @@ import DevelopmentEdit from '@/views/development/DevelopmentEdit.vue'
 import DevelopmentCreate from '@/views/development/DevelopmentCreate.vue'
 import Events from '@/views/event/Events.vue'
 import Event from '@/views/event/Event.vue'
+import EventEdit from '@/views/event/EventEdit.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -122,6 +123,12 @@ const router = createRouter({
           name: 'manage-event',
           component: Event,
           meta: { requiresAuth: true, permission: 'event-list' }
+        },
+        {
+          path: 'event/edit/:id',
+          name: 'edit-event',
+          component: EventEdit,
+          meta: { requiresAuth: true, permission: 'event-edit' }
         },
       ]
     },
