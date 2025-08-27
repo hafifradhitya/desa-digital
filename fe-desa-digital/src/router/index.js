@@ -16,6 +16,7 @@ import SocialAssistanceRecipient from '@/views/social-assistance-recipient/Socia
 import Developments from '@/views/development/Developments.vue'
 import Development from '@/views/development/Development.vue'
 import DevelopmentEdit from '@/views/development/DevelopmentEdit.vue'
+import DevelopmentCreate from '@/views/development/DevelopmentCreate.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -101,6 +102,12 @@ const router = createRouter({
           name: 'edit-development',
           component: DevelopmentEdit,
           meta: { requiresAuth: true, permission: 'development-edit' }
+        },
+        {
+          path: 'development/create',
+          name: 'create-development',
+          component: DevelopmentCreate,
+          meta: { requiresAuth: true, permission: 'development-create' }
         },
       ]
     },

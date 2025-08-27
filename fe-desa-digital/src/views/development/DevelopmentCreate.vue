@@ -1,9 +1,9 @@
 <script setup>
-import { formatRupiah, formatToClientTimezone, parseRupiah } from '@/helpers/format';
+import { formatRupiah, parseRupiah } from '@/helpers/format';
 import { useDevelopmentStore } from '@/stores/development';
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { ref, watch } from 'vue';
+import { RouterLink } from 'vue-router';
 
 import IconEditSecondaryGreen from '@/assets/images/icons/edit-secondary-green.svg'
 import IconEditBlack from '@/assets/images/icons/edit-black.svg'
@@ -11,11 +11,10 @@ import IconProfileCircleSecondaryGreen from '@/assets/images/icons/profile-circl
 import IconProfileCircleBlack from '@/assets/images/icons/profile-circle-black.svg'
 import IconCalendarSecondaryGreen from '@/assets/images/icons/calendar-2-secondary-green.svg';
 import IconCalendarBlack from '@/assets/images/icons/calendar-2-black.svg';
+import IconDollarSquareSecondaryGreen from '@/assets/images/icons/dollar-square-secondary-green.svg'
+import IconDollarSquareBlack from '@/assets/images/icons/dollar-square-black.svg'
 
 import Input from '@/components/ui/Input.vue';
-import { getTime } from 'date-fns';
-
-const route = useRoute()
 
 const development = ref({
     id: null,
@@ -32,26 +31,17 @@ const development = ref({
 
 const developmentStore = useDevelopmentStore();
 const { loading, error, success } = storeToRefs(developmentStore)
-const { fetchDevelopment, updateDevelopment } = developmentStore
-
-const fetchData = async () => {
-    const response = await fetchDevelopment(route.params.id)
-
-    development.value = response
-    development.value.thumbnail_url = response.thumbnail
-    development.value.thumbnail = null
-    development.value.day = Math.round((new Date(development.value.end_date).getTime() - new Date(development.value.start_date).getTime()) / (24 * 60 * 60 * 1000) )
-}
+const { createDevelopment } = developmentStore
 
 // const handleSubmit = async() => {
-//     await updateDevelopment({
+//     await createDevelopment({
 //         ...development.value,
 //         amount: parseRupiah(development.value.amount)
 //     })
 // }
 
 const handleSubmit = async () => {
-    await updateDevelopment({
+    await createDevelopment({
         ...development.value,
         amount: parseInt(parseRupiah(development.value.amount)) || 0
     })
@@ -71,8 +61,6 @@ watch(() => development.value.day, (newDay) => {
     development.value.day = newDay;
     development.value.end_date = new Date(new Date(development.value.start_date).getTime() + newDay * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 })
-
-onMounted(fetchData)
 </script>
 
 <template>
@@ -81,10 +69,10 @@ onMounted(fetchData)
             <div class="flex gap-1 items-center leading-5 text-desa-secondary">
                 <p class="last-of-type:text-desa-dark-green last-of-type:font-semibold capitalize ">Pembangunan Desa</p>
                 <span>/</span>
-                <p class="last-of-type:text-desa-dark-green last-of-type:font-semibold capitalize ">Edit Pembangunan
+                <p class="last-of-type:text-desa-dark-green last-of-type:font-semibold capitalize ">Tambah Pembangunan
                     Desa</p>
             </div>
-            <h1 class="font-semibold text-2xl">Edit Pembangunan Desa</h1>
+            <h1 class="font-semibold text-2xl">Tambah Pembangunan Desa</h1>
         </div>
     </div>
     <form @submit.prevent="handleSubmit" id="myForm" class="capitalize">
@@ -131,12 +119,21 @@ onMounted(fetchData)
                 </div>
             </section>
             <hr class="border-desa-background" />
+            <section id="Penanggung-Jawab" class="flex items-center justify-between">
+                <p class="font-medium leading-5 text-desa-secondary w-[calc(424/904*100%)]">Jumlah Dana</p>
+                <div class="flex flex-col gap-3 flex-1 shrink-0">
+                    <Input v-model="development.amount" type="text" placeholder="Ketik Jumlah Dana" 
+                        :error-message="error?.amount" 
+                        :icon="IconDollarSquareSecondaryGreen" :filled-icon="IconDollarSquareBlack" />
+                </div>
+            </section>
+            <hr class="border-desa-background" />
             <section id="Status" class="flex items-center justify-between">
                 <p class="font-medium leading-5 text-desa-secondary w-[calc(424/904*100%)]">Status Pembangunan</p>
                 <div class="flex flex-1 gap-6 shrink-0">
                     <label
                         class="group flex w-full items-center h-14 rounded-2xl p-4 ring-[1.5px] ring-desa-background gap-2 has-[:checked]:ring-none has-[:checked]:bg-desa-foreshadow transition-setup">
-                        <input v-model="development.status" value="ongoing" type="radio" checked name="status" id=""
+                        <input v-model="development.status" value="ongoing" type="radio" name="status" id=""
                             class="flex size-[18px] shrink-0 accent-desa-secondary checked:accent-desa-dark-green transition-setup">
                         <span
                             class="font-medium leading-5 text-desa-secondary w-full group-has-[:checked]:text-desa-dark-green transition-setup">
@@ -209,7 +206,7 @@ onMounted(fetchData)
             </section>
             <hr class="border-desa-background w-[calc(100%+48px)] -mx-6" />
             <section id="Buttons" class="flex items-center justify-end gap-4">
-                <RouterLink :to="{ name: 'manage-development', params: {id: development.id} }">
+                <RouterLink :to="{ name: 'development' }">
                     <div
                         class="py-[18px] rounded-2xl bg-desa-red w-[180px] text-center flex justify-center font-medium text-white">
                         Batal, Tidak jadi</div>
