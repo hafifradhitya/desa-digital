@@ -47,6 +47,22 @@ export const useEventStore = defineStore("event", {
             }
         },
 
+        async createEvent(payload) {
+            this.loading = true
+
+            try {
+                const response = await axiosInstance.post("/event", payload)
+
+                this.success = response.data.message
+
+                router.push({ name: 'event' })
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        },
+
         async updateEvent(payload) {
           this.loading = true
           try {
