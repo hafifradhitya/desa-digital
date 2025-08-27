@@ -46,6 +46,10 @@ const sidebarItem = [
                 label: 'Pembangunan',
                 path: '/development'
             },
+            {
+                label: 'Event Desa',
+                path: '/event'
+            }
         ]
     }
 ];
