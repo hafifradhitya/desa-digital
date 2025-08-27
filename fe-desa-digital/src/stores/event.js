@@ -32,5 +32,19 @@ export const useEventStore = defineStore("event", {
                 this.loading = false
             }
         },
+
+        async fetchEvent(id){
+            this.loading = true
+
+            try {
+                const response = await axiosInstance.get(`/event/${id}`)
+
+                return response.data.data
+            } catch (error) {
+                this.error = handleError(error)
+            } finally {
+                this.loading = false
+            }
+        },
     }
 })

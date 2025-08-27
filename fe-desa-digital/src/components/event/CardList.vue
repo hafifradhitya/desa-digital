@@ -1,5 +1,6 @@
 <script setup>
 import { formatRupiah } from '@/helpers/format';
+import { RouterLink } from 'vue-router';
 
 defineProps({
     item: {
@@ -32,10 +33,10 @@ defineProps({
                         </p>
                     </div>
                 </div>
-                <a href="kd-event-desa-manage.html"
+                <RouterLink :to="{ name: 'manage-event', params: {id: item.id} }"
                     class="flex items-center shrink-0 gap-[10px] rounded-2xl py-4 px-6 bg-desa-black">
                     <span class="font-medium text-white">Manage</span>
-                </a>
+                </RouterLink>
             </div>
             <hr class="border-desa-background">
             <div class="grid grid-cols-3 gap-3">
