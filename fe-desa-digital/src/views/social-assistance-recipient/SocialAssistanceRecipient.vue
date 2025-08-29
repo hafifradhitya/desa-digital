@@ -90,7 +90,7 @@ onMounted(fetchData)
     <div class="flex gap-[14px]">
         <section id="Detail"
             class="flex flex-col shrink-0 w-[calc(545/1000*100%)] h-fit rounded-3xl p-6 gap-6 bg-white">
-            <p class="font-medium leading-5 text-desa-secondary">Detail Bantuan Sosial</p>
+            <p class="font-medium leading-5 text-desa-secondary">Detail Bantuan Sosials</p>
             <div class="flex items-center justify-between gap-4">
                 <div class="flex w-[120px] h-[100px] shrink-0 rounded-2xl overflow-hidden bg-desa-foreshadow">
                     <img :src="socialAssistanceRecipient.social_assistance?.thumbnail"
